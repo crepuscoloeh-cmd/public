@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini活动记录分组工具 - 免费在线版 | 按时间分组导出对话记录</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="免费在线工具，帮你将Google Gemini活动记录按时间智能分组并导出为TXT文件。支持自定义时间间隔，自动清理模板文字，东八区时间校准。">
+  <meta name="keywords" content="Gemini,Google,活动记录,对话记录,分组工具,导出,TXT,在线工具,免费">
+  <meta name="author" content="Gemini Parser Tool">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gemini活动记录分组工具 - 免费在线版">
+  <meta property="og:description" content="将Google Gemini对话记录按时间智能分组，一键导出TXT文件。完全本地处理，保护隐私安全。">
+  <meta property="og:image" content="https://via.placeholder.com/1200x630/4285f4/ffffff?text=Gemini+Parser">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  
+  <style>
+    :root {
+      --primary: #4285f4;
+      --secondary: #34a853;
+      --accent: #667eea;
+      --warning: #ffc107;
+      --success: #28a745;
+      --danger: #dc3545;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --border: #dee2e6;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+      min-height: 100vh; 
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container { 
+      max-width: 1100px; 
+      margin: 0 auto; 
+      background: var(--bg-primary); 
+      border-radius: 20px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.15); 
+      overflow: hidden;
+    }
+    
+    .header { 
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); 
+      color: white; 
+      padding: 48px 40px; 
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 4s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+      50% { transform: translateX(0%) translateY(0%) rotate(180deg); }
+    }
+    
+    .header h1 { 
+      font-size: clamp(2.2em, 5vw, 3.5em);
+      font-weight: 800; 
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header p {
+      font-size: clamp(1em, 3vw, 1.3em);
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+      font-weight: 400;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .feature-item {
+      background: rgba(255,255,255,0.15);
+      padding: 20px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: var(--transition);
+    }
+    
+    .feature-item:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.25);
+    }
+    
+    .feature-item h3 {
+      font-size: 1.2em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .upload-section { 
+      padding: 40px; 
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #fafbff 0%, var(--bg-secondary) 100%);
+    }
+    
+    .warning { 
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
+      color: #856404; 
+      padding: 24px; 
+      border-radius: var(--radius); 
+      border-left: 5px solid var(--warning);
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      font-weight: 500;
+      line-height: 1.7;
+    }
+    
+    .warning strong { font-weight: 700; }
+    .warning a { color: #856404; text-decoration: underline; }
+    .warning a:hover { text-decoration: none; }
+    
+    .upload-area { 
+      border: 3px dashed var(--primary); 
+      border-radius: 20px; 
+      padding: 60px 20px; 
+      cursor: pointer;
+      transition: var(--transition); 
+      background: linear-gradient(135deg, #fafbff 0%, #f0f8ff 100%); 
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .upload-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(66, 133, 244, 0.1), transparent);
+      transition: left 0.6s;
+    }
+    
+    .upload-area:hover::before { left: 100%; }
+    
+    .upload-area:hover, .upload-area.dragover { 
+      border-color: var(--secondary); 
+      background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%); 
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 12px 35px rgba(52, 168, 83, 0.25);
+    }
+    
+    .upload-icon { 
+      font-size: 64px; 
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    
+    .upload-area h3 {
+      font-size: 1.6em;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    .upload-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    
+    .format-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .format-badge {
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    
+    #fileInput { display: none; }
+    
+    .controls { 
+      padding: 40px; 
+      background: linear-gradient(to right, var(--bg-secondary) 0%, #e9ecef 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .control-group { 
+      display: flex; 
+      gap: 24px; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      margin: 20px 0;
+    }
+    
+    .control-group label { 
+      font-weight: 700; 
+      min-width: 140px; 
+      font-size: 16px;
+    }
+    
+    select, input, button { 
+      padding: 16px 24px; 
+      border: 2px solid var(--border); 
+      border-radius: var(--radius); 
+      font-size: 16px;
+      transition: var(--transition);
+      font-family: inherit;
+      font-weight: 500;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.15);
+    }
+    
+    .btn-primary { 
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: 700;
+      font-size: 18px;
+      padding: 18px 36px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-primary:hover:not(:disabled)::before { left: 100%; }
+    
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .progress-section { 
+      padding: 32px 40px; 
+      display: none; 
+      background: var(--bg-secondary);
+    }
+    
+    .progress-bar { 
+      height: 14px; 
+      background: #e9ecef; 
+      border-radius: 10px; 
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .progress-fill { 
+      height: 100%; 
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent)); 
+      width: 0%; 
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      border-radius: 10px;
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      animation: progress-shine 2s infinite;
+    }
+    
+    @keyframes progress-shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .progress-text { 
+      margin-top: 16px; 
+      text-align: center; 
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    .results { 
+      padding: 40px; 
+      display: none;
+      background: linear-gradient(to bottom, var(--bg-primary) 0%, #fafbff 100%);
+    }
+    
+    .stats { 
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, #e9ecef 100%); 
+      padding: 32px; 
+      border-radius: 18px; 
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+    }
+    
+    .stats-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+      gap: 24px;
+    }
+    
+    .stat-item { 
+      text-align: center;
+      padding: 24px;
+      background: rgba(255,255,255,0.9);
+      border-radius: var(--radius);
+      transition: var(--transition);
+    }
+    
+    .stat-item:hover { transform: translateY(-4px); }
+    
+    .stat-number { 
+      font-size: 3em; 
+      font-weight: 900; 
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: block;
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    
+    .file-list { display: grid; gap: 20px; }
+    
+    .file-item { 
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); 
+      border: 2px solid var(--border); 
+      border-radius: 18px; 
+      padding: 24px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .file-item:hover { 
+      border-color: var(--primary); 
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    
+    .file-info { display: flex; align-items: center; gap: 20px; flex: 1; }
+    .file-icon { font-size: 40px; }
+    
+    .file-details h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    
+    .file-meta {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .download-btn { 
+      background: linear-gradient(135deg, var(--primary) 0%, #1a73e8 100%); 
+      color: white; 
+      border: none; 
+      padding: 14px 28px; 
+      border-radius: var(--radius); 
+      cursor: pointer; 
+      font-weight: 700;
+      font-size: 16px;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+    }
+    
+    .download-btn:hover {
+      background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+    
+    .debug { 
+      padding: 24px 40px; 
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
+      font-family: 'Courier New', monospace; 
+      color: #ecf0f1; 
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .debug::-webkit-scrollbar { width: 8px; }
+    .debug::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+    .debug::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+    
+    .footer {
+      padding: 32px 40px;
+      background: var(--text-primary);
+      color: white;
+      text-align: center;
+    }
+    
+    .footer h3 { margin-bottom: 16px; font-weight: 700; }
+    .footer p { opacity: 0.8; margin-bottom: 8px; }
+    
+    .footer-links {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-link {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    
+    .footer-link:hover { color: white; transform: translateY(-1px); }
+    
+    .message {
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .message.success {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: var(--success);
+      border-left: 5px solid var(--success);
+    }
+    
+    .message.error {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      color: var(--danger);
+      border-left: 5px solid var(--danger);
+    }
+    
+    @media (max-width: 768px) { 
+      body { padding: 10px; }
+      .container { border-radius: 16px; }
+      .header { padding: 32px 20px; }
+      .upload-section, .controls, .results { padding: 24px 20px; }
+      .control-group { flex-direction: column; align-items: flex-start; gap: 16px; } 
+      .control-group label { min-width: auto; } 
+      .file-item { flex-direction: column; gap: 20px; text-align: center; }
+      .upload-area { padding: 40px 16px; }
+      .features { grid-template-columns: 1fr; }
+      .btn-primary { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>📝 Gemini活动记录分组工具</h1>
+      <p>智能解析 · 按时间分组 · 一键导出 · 完全免费</p>
+      
+      <div class="features">
+        <div class="feature-item">
+          <h3>🔒 隐私安全</h3>
+          <p>本地处理，数据不上传</p>
+        </div>
+        <div class="feature-item">
+          <h3>⚡ 智能解析</h3>
+          <p>自动识别对话内容</p>
+        </div>
+        <div class="feature-item">
+          <h3>🕐 时间校准</h3>
+          <p>东八区时间自动转换</p>
+        </div>
+        <div class="feature-item">
+          <h3>📁 批量导出</h3>
+          <p>按时间段生成TXT文件</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="upload-section">
+        <div class="warning">
+          <strong>📋 详细使用说明：</strong>
+          <br><strong>第一步：</strong>访问 <a href="https://myactivity.google.com" target="_blank">Google我的活动</a>
+          <br><strong>第二步：</strong>点击右上角头像 → 隐私信息中心
+          <br><strong>第三步：</strong>选择「请求删除内容和导出数据」
+          <br><strong>第四步：</strong>点击「导出」，产品选择「我的活动」
+          <br><strong>第五步：</strong>等待导出完成，下载压缩包
+          <br><strong>第六步：</strong>解压后找到「Gemini Apps」文件夹
+          <br><strong>第七步：</strong>选择「我的活动记录.html」文件拖入下方区域
+          <br><strong>第八步：</strong>选择时间分组间隔，点击开始处理
+        </div>
+        
+        <div class="upload-area" id="dropZone">
+          <div class="upload-icon">📁</div>
+          <h3>选择或拖放 Gemini 导出的 HTML 文件</h3>
+          <p class="upload-subtitle">支持的格式和编码</p>
+          <div class="format-badges">
+            <span class="format-badge">HTML</span>
+            <span class="format-badge">UTF-8</span>
+            <span class="format-badge">UTF-16</span>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept=".html,.htm">
+      </section>
+
+      <section class="controls">
+        <div class="control-group">
+          <label for="timeInterval">📅 分组间隔:</label>
+          <select id="timeInterval">
+            <option value="1">1天</option>
+            <option value="3">3天</option>
+            <option value="7" selected>1周</option>
+            <option value="14">2周</option>
+            <option value="30">1个月</option>
+            <option value="90">3个月</option>
+            <option value="custom">自定义天数</option>
+          </select>
+          <input type="number" id="customDays" placeholder="输入天数" min="1" max="365" style="display:none; width:140px;">
+        </div>
+        <div class="control-group">
+          <button class="btn-primary" id="processBtn">🚀 开始处理</button>
+        </div>
+      </section>
+
+      <section class="progress-section" id="progressSection">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">准备处理文件...</div>
+      </section>
+
+      <section id="results" class="results">
+        <div class="stats">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-number" id="totalConversations">0</span>
+              <div class="stat-label">💬 总对话数</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" id="totalFiles">0</span>
+              <div class="stat-label">📄 生成文件数</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" id="dateRange">-</span>
+              <div class="stat-label">🕐 时间范围</div>
+            </div>
+          </div>
+        </div>
+        <div id="fileList" class="file-list"></div>
+      </section>
+    </main>
+
+    <div class="debug">
+      <div><strong>🔍 处理日志：</strong></div>
+      <pre id="debugLog"></pre>
+    </div>
+
+    <footer class="footer">
+      <h3>关于本工具</h3>
+      <p>完全免费的在线工具，帮助您整理和导出Google Gemini对话记录</p>
+      <p>所有数据在您的浏览器本地处理，绝不上传到任何服务器</p>
+      <div class="footer-links">
+        <a href="#" class="footer-link">使用说明</a>
+        <a href="#" class="footer-link">隐私政策</a>
+        <a href="#" class="footer-link">意见反馈</a>
+        <a href="https://github.com" class="footer-link" target="_blank">GitHub</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Debug logging
+    const debugLog = document.getElementById('debugLog');
+    const log = (...args) => {
+      const timestamp = new Date().toLocaleTimeString('zh-CN');
+      debugLog.textContent += `[${timestamp}] ${args.join(' ')}\n`;
+      debugLog.scrollTop = debugLog.scrollHeight;
+    };
+
+    // DOM elements
+    const $ = sel => document.querySelector(sel);
+    const dropZone = $('#dropZone');
+    const fileInput = $('#fileInput');
+    const processBtn = $('#processBtn');
+    const progressSection = $('#progressSection');
+    const resultsSection = $('#results');
+
+    // Global state
+    let processedFiles = [];
+
+    // Drag and drop
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('dragover');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        log(`文件已拖入: ${files[0].name} (${(files[0].size / 1024).toFixed(1)}KB)`);
+        processBtn.textContent = '🚀 开始处理';
+      }
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        log(`文件已选择: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
+        processBtn.textContent = '🚀 开始处理';
+      }
+    });
+
+    // Time interval selection
+    $('#timeInterval').addEventListener('change', function() {
+      const customInput = $('#customDays');
+      if (this.value === 'custom') {
+        customInput.style.display = 'inline-block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+      }
+    });
+
+    // Progress update
+    function updateProgress(percentage, message) {
+      $('#progressFill').style.width = `${percentage}%`;
+      $('#progressText').textContent = message;
+    }
+
+    // File reading with encoding detection
+    function readFileAsync(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const buffer = reader.result;
+            let text = new TextDecoder('utf-8', {fatal: false}).decode(buffer);
+            
+            if (text.includes('\u0000')) {
+              text = new TextDecoder('utf-16le', {fatal: false}).decode(buffer);
+            }
+            
+            resolve(text);
+          } catch (error) {
+            reject(new Error('文件编码不支持或文件已损坏'));
+          }
+        };
+        reader.onerror = () => reject(new Error('文件读取失败'));
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    // HTML to text conversion
+    function htmlToText(html) {
+      let text = html;
+      
+      // Remove script and style tags
+      text = text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+      
+      // Convert line-breaking elements to newlines
+      text = text.replace(/<(br|BR)\s*\/?>/g, '\n');
+      text = text.replace(/<\/(p|div|li|section|article|header|footer|h[1-6])>/gi, '\n');
+      text = text.replace(/<(p|div|li|section|article|header|footer|h[1-6])\b[^>]*>/gi, '\n');
+      
+      // Remove all remaining HTML tags
+      text = text.replace(/<[^>]+>/g, '');
+      
+      // Decode HTML entities
+      text = text.replace(/&nbsp;/g, ' ')
+                 .replace(/&emsp;/g, ' ')
+                 .replace(/&lt;/g, '<')
+                 .replace(/&gt;/g, '>')
+                 .replace(/&amp;/g, '&')
+                 .replace(/&quot;/g, '"')
+                 .replace(/&#39;/g, "'");
+      
+      // Normalize line breaks
+      text = text.replace(/\r\n?/g, '\n')
+                 .replace(/\n{3,}/g, '\n\n')
+                 .trim();
+      
+      return text;
+    }
+
+    // Parse timestamp with timezone conversion
+    function parseTimestamp(timestamp) {
+      const raw = timestamp.trim();
+      const hasAM = /上午/.test(raw);
+      const hasPM = /下午/.test(raw);
+      
+      // Extract timezone
+      let timezone = null;
+      const tzMatch = raw.match(/\b(PDT|PST|UTC|GMT[+\-]?\d{0,2})\b/);
+      if (tzMatch) {
+        timezone = tzMatch[1];
+      }
+      
+      // Clean timestamp string
+      let cleanTime = raw.replace(/年|月/g, '/').replace(/日/g, '');
+      if (tzMatch) {
+        cleanTime = cleanTime.replace(tzMatch[0], '').trim();
+      }
+      
+      // Parse date and time
+      const match = cleanTime.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (match) {
+        const [, year, month, day, hour, minute, second] = match;
+        let parsedHour = parseInt(hour);
+        
+        // Handle AM/PM
+        if (hasPM && parsedHour < 12) parsedHour += 12;
+        if (hasAM && parsedHour === 12) parsedHour = 0;
+        
+        // Calculate timezone offset
+        let offsetMinutes = 0;
+        if (timezone === 'PDT') offsetMinutes = -7 * 60;
+        else if (timezone === 'PST') offsetMinutes = -8 * 60;
+        else if (timezone === 'UTC') offsetMinutes = 0;
+        else if (timezone && /^GMT[+\-]\d{1,2}$/.test(timezone)) {
+          offsetMinutes = parseInt(timezone.slice(3)) * 60;
+        }
+        
+        // Create UTC timestamp and convert to China Standard Time (UTC+8)
+        const utcTime = Date.UTC(
+          parseInt(year), 
+          parseInt(month) - 1, 
+          parseInt(day), 
+          parsedHour - (offsetMinutes / 60), 
+          parseInt(minute), 
+          parseInt(second || '0')
+        );
+        
+        const chinaTime = utcTime + (8 * 60 * 60 * 1000);
+        return new Date(chinaTime);
+      }
+      
+      // Fallback
+      const fallback = new Date(raw);
+      return isNaN(fallback.getTime()) ? new Date() : fallback;
+    }
+
+    // Main parsing function
+    function parseGeminiHTML(html) {
+      const conversations = [];
+      const text = htmlToText(html);
+      
+      // Enhanced boilerplate removal patterns
+      const boilerplatePatterns = [
+        /(产品：?\s*Gemini\s*Apps?)/gi,
+        /(商品：?\s*Gemini\s*Apps?)/gi,
+        /为什么此处会显示此活动记录[？?]/gi,
+        /由于以下设置处于已启用状态[\s\S]*?Gemini\s*Apps?\s*Activity/gi,
+        /您可以点击此处控制这些设置[。.]?/gi,
+        /\s*Gemini\s*Apps?\s*$/gmi,
+        /^\s*商品：?\s*$/gmi,
+        /^\s*产品：?\s*$/gmi
+      ];
+      
+      // Clean the text multiple times
+      let cleanText = text;
+      for (let i = 0; i < 3; i++) {
+        boilerplatePatterns.forEach(pattern => {
+          cleanText = cleanText.replace(pattern, '');
+        });
+      }
+      
+      // Normalize "Prompted" markers
+      cleanText = cleanText.replace(/Gemini\s*Apps?\s*Prompted/gi, 'Prompted')
+                          .replace(/\n\s*Prompted\s*\n?/gi, '\nPrompted\n');
+      
+      // Split by Prompted blocks
+      const blocks = cleanText.split(/^\s*Prompted\s*$/im);
+      const timestampRegex = /(\d{4}年\d{1,2}月\d{1,2}日\s*(?:上午|下午)?\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)|(\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)/;
+      
+      log(`开始解析 ${blocks.length - 1} 个对话块`);
+      
+      for (let i = 1; i < blocks.length; i++) {
+        let block = blocks[i].trim();
+        if (block.length < 10) continue;
+        
+        // Clean boilerplate from each block
+        boilerplatePatterns.forEach(pattern => {
+          block = block.replace(pattern, '');
+        });
+        
+        const timestampMatch = block.match(timestampRegex);
+        if (!timestampMatch) continue;
+        
+        const timestampStr = timestampMatch[0];
+        const timestampIndex = timestampMatch.index;
+        
+        // Split content at timestamp
+        const userPart = block.slice(0, timestampIndex).trim();
+        const geminiPart = block.slice(timestampIndex + timestampStr.length).trim();
+        
+        // Clean parts again
+        let userMessage = userPart;
+        let geminiMessage = geminiPart;
+        
+        boilerplatePatterns.forEach(pattern => {
+          userMessage = userMessage.replace(pattern, '');
+          geminiMessage = geminiMessage.replace(pattern, '');
+        });
+        
+        userMessage = userMessage.trim();
+        geminiMessage = geminiMessage.trim();
+        
+        if (userMessage || geminiMessage) {
+          conversations.push({
+            timestamp: parseTimestamp(timestampStr),
+            userMessage,
+            aiMessage: geminiMessage
+          });
+        }
+      }
+      
+      // Deduplicate and sort
+      const seen = new Set();
+      const unique = [];
+      
+      conversations.sort((a, b) => a.timestamp - b.timestamp).forEach(conv => {
+        const key = (conv.userMessage + '|' + conv.aiMessage).slice(0, 100);
+        if (!seen.has(key) && (conv.userMessage || conv.aiMessage)) {
+          seen.add(key);
+          unique.push(conv);
+        }
+      });
+      
+      log(`解析完成，找到 ${unique.length} 条有效对话`);
+      return unique;
+    }
+
+    // Group conversations by time interval
+    function groupByTimeInterval(conversations, intervalDays) {
+      if (conversations.length === 0) return [];
+      
+      const msPerDay = 24 * 60 * 60 * 1000;
+      const intervalMs = intervalDays * msPerDay;
+      
+      const earliest = Math.min(...conversations.map(c => c.timestamp.getTime()));
+      const latest = Math.max(...conversations.map(c => c.timestamp.getTime()));
+      
+      const startTime = new Date(earliest);
+      startTime.setHours(0, 0, 0, 0);
+      
+      const endTime = new Date(latest);
+      endTime.setHours(23, 59, 59, 999);
+      
+      const groups = [];
+      
+      for (let time = startTime.getTime(); time <= endTime.getTime(); time += intervalMs) {
+        const groupEnd = time + intervalMs - 1;
+        const conversationsInRange = conversations.filter(conv => {
+          const convTime = conv.timestamp.getTime();
+          return convTime >= time && convTime <= groupEnd;
+        }).sort((a, b) => a.timestamp - b.timestamp);
+        
+        if (conversationsInRange.length > 0) {
+          groups.push({
+            startDate: new Date(time),
+            endDate: new Date(groupEnd),
+            conversations: conversationsInRange
+          });
+        }
+      }
+      
+      return groups;
+    }
+
+    // Generate TXT files
+    function generateTXTFiles(groups, intervalDays) {
+      const files = [];
+      const intervalNames = {
+        1: '日', 3: '3日', 7: '周', 14: '双周', 
+        30: '月', 90: '季'
+      };
+      const intervalName = intervalNames[intervalDays] || `${intervalDays}日`;
+      
+      const formatDate = (date) => {
+        return date.toLocaleDateString('zh-CN', { 
+          timeZone: 'Asia/Shanghai' 
+        }).replace(/\//g, '-');
+      };
+      
+      const formatDateTime = (date) => {
+        return date.toLocaleString('zh-CN', { 
+          timeZone: 'Asia/Shanghai' 
+        });
+      };
+      
+      groups.forEach((group, index) => {
+        const startDate = formatDate(group.startDate);
+        const endDate = formatDate(group.endDate);
+        
+        let content = `Gemini对话记录 - 第${index + 1}${intervalName}\n`;
+        content += `时间范围(东八区): ${startDate} 至 ${endDate}\n`;
+        content += `对话数量: ${group.conversations.length}\n`;
+        content += `生成时间: ${formatDateTime(new Date())}\n`;
+        content += `生成工具: Gemini活动记录分组工具 在线版\n`;
+        content += `${'='.repeat(60)}\n\n`;
+        
+        group.conversations.forEach((conversation, convIndex) => {
+          const timestamp = formatDateTime(conversation.timestamp);
+          content += `[对话 ${convIndex + 1}] - ${timestamp}\n`;
+          content += `${'─'.repeat(40)}\n`;
+          
+          if (conversation.userMessage) {
+            content += `👤 User:\n${conversation.userMessage}\n\n`;
+          }
+          
+          if (conversation.aiMessage) {
+            content += `🤖 Gemini:\n${conversation.aiMessage}\n\n`;
+          }
+          
+          content += `${'─'.repeat(40)}\n\n`;
+        });
+        
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const filename = `Gemini对话记录-第${index + 1}${intervalName}-${startDate}.txt`;
+        
+        files.push({
+          name: filename,
+          blob,
+          startDate,
+          endDate,
+          count: group.conversations.length,
+          url: URL.createObjectURL(blob)
+        });
+      });
+      
+      return files;
+    }
+
+    // Main processing function
+    async function processFile() {
+      const file = fileInput.files[0];
+      if (!file) {
+        showMessage('请先选择文件', 'error');
+        return;
+      }
+      
+      // UI state updates
+      processBtn.disabled = true;
+      processBtn.textContent = '⏳ 处理中...';
+      progressSection.style.display = 'block';
+      resultsSection.style.display = 'none';
+      
+      log(`开始处理文件: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
+      
+      try {
+        // Read file
+        updateProgress(10, '正在读取文件...');
+        const htmlContent = await readFileAsync(file);
+        log(`文件读取完成，内容长度: ${htmlContent.length} 字符`);
+        
+        // Parse conversations
+        updateProgress(35, '正在解析对话记录...');
+        const conversations = parseGeminiHTML(htmlContent);
+        
+        if (conversations.length === 0) {
+          throw new Error('未找到有效的对话记录。请确认文件是从"Google我的活动 → Gemini Apps"导出的HTML文件。');
+        }
+        
+        // Group by time interval
+        updateProgress(60, '正在按时间分组...');
+        let intervalDays = parseInt($('#timeInterval').value);
+        
+        if ($('#timeInterval').value === 'custom') {
+          const customDays = parseInt($('#customDays').value);
+          if (!customDays || customDays <= 0 || customDays > 365) {
+            throw new Error('请输入有效的自定义天数(1-365)');
+          }
+          intervalDays = customDays;
+        }
+        
+        const groups = groupByTimeInterval(conversations, intervalDays);
+        log(`分组完成，生成 ${groups.length} 个时间段`);
+        
+        // Generate files
+        updateProgress(85, '正在生成TXT文件...');
+        processedFiles = generateTXTFiles(groups, intervalDays);
+        
+        updateProgress(100, '🎉 处理完成!');
+        showMessage('处理成功！文件已生成，可以下载了。', 'success');
+        displayResults();
+        
+      } catch (error) {
+        log(`处理失败: ${error.message}`);
+        showMessage(`处理失败: ${error.message}`, 'error');
+        updateProgress(0, '❌ 处理失败');
+      } finally {
+        processBtn.disabled = false;
+        processBtn.textContent = '🚀 开始处理';
+        setTimeout(() => {
+          progressSection.style.display = 'none';
+        }, 2000);
+      }
+    }
+
+    // Display results
+    function displayResults() {
+      const totalConversations = processedFiles.reduce((sum, file) => sum + file.count, 0);
+      
+      $('#totalConversations').textContent = totalConversations;
+      $('#totalFiles').textContent = processedFiles.length;
+      
+      if (processedFiles.length > 0) {
+        const firstDate = processedFiles[0].startDate;
+        const lastDate = processedFiles[processedFiles.length - 1].endDate;
+        $('#dateRange').textContent = `${firstDate} - ${lastDate}`;
+      }
+      
+      const fileList = $('#fileList');
+      fileList.innerHTML = '';
+      
+      processedFiles.forEach(file => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        fileItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <h3>${file.name}</h3>
+              <div class="file-meta">时间: ${file.startDate} - ${file.endDate} | 对话数: ${file.count}</div>
+            </div>
+          </div>
+          <button class="download-btn" onclick="downloadFile('${file.url}', '${file.name}')">
+            📥 下载TXT
+          </button>
+        `;
+        
+        fileList.appendChild(fileItem);
+      });
+      
+      resultsSection.style.display = 'block';
+      log(`结果展示完成，共 ${processedFiles.length} 个文件可供下载`);
+    }
+
+    // Download file
+    function downloadFile(url, filename) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      log(`下载文件: ${filename}`);
+    }
+
+    // Show message
+    function showMessage(message, type = 'info') {
+      // Remove existing messages
+      const existingMessages = document.querySelectorAll('.message');
+      existingMessages.forEach(msg => msg.remove());
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = message;
+      
+      const uploadSection = document.querySelector('.upload-section');
+      uploadSection.insertBefore(messageDiv, uploadSection.firstChild);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.remove();
+        }
+      }, 5000);
+    }
+
+    // Event listeners
+    processBtn.addEventListener('click', processFile);
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      processedFiles.forEach(file => {
+        URL.revokeObjectURL(file.url);
+      });
+    });
+
+    // Initialize
+    log('Gemini活动记录分组工具 在线版已加载完成');
+    log('工具特点: 隐私安全(本地处理) | 智能解析 | 时间校准 | 批量导出');
+  </script>
+</body>
+</html>
