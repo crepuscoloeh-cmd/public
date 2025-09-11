@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -122,9 +122,14 @@
     }
     
     .feature-item h3 {
-      font-size: 1.2em;
-      margin-bottom: 8px;
-      font-weight: 700;
+      font-size: 1em;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    
+    .feature-item p {
+      font-size: 0.85em;
+      opacity: 0.9;
     }
     
     .upload-section { 
@@ -545,14 +550,14 @@
       <section class="upload-section">
         <div class="warning">
           <strong>📋 详细使用说明：</strong>
-          <br><strong>第一步：</strong>访问 <a href="https://myactivity.google.com" target="_blank">Google我的活动</a>
-          <br><strong>第二步：</strong>点击右上角头像 → 隐私信息中心
-          <br><strong>第三步：</strong>选择「请求删除内容和导出数据」
-          <br><strong>第四步：</strong>点击「导出」，产品选择「我的活动」
-          <br><strong>第五步：</strong>等待导出完成，下载压缩包
-          <br><strong>第六步：</strong>解压后找到「Gemini Apps」文件夹
-          <br><strong>第七步：</strong>选择「我的活动记录.html」文件拖入下方区域
-          <br><strong>第八步：</strong>选择时间分组间隔，点击开始处理
+          <br><br><strong>🔸 App操作路径：</strong>
+          <br>Google Gemini → 隐私信息中心 → 请求删除内容和导出数据 → 导出（产品选择：我的活动）→ 压缩包找到Gemini Apps → 我的活动记录.html
+          <br><br><strong>🔸 Web操作路径：</strong>
+          <br>Google活动中心 → 头像 → 管理您的账号 → 数据和隐私设置 → 下载您的数据 → 产品选择"我的活动" → 同上
+          <br><br><strong>🔸 处理步骤：</strong>
+          <br>1. 按上述路径获取HTML文件
+          <br>2. 将「我的活动记录.html」拖入下方区域
+          <br>3. 选择时间分组间隔，点击开始处理
         </div>
         
         <div class="upload-area" id="dropZone">
@@ -569,6 +574,7 @@
       </section>
 
       <section class="controls">
+        <div id="fileStatus" class="message success" style="display: none;"></div>
         <div class="control-group">
           <label for="timeInterval">📅 分组间隔:</label>
           <select id="timeInterval">
@@ -653,7 +659,7 @@
     // Global state
     let processedFiles = [];
 
-    // Drag and drop
+    // Drag and drop handlers
     ['dragenter', 'dragover'].forEach(eventName => {
       dropZone.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -674,7 +680,10 @@
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         fileInput.files = files;
-        log(`文件已拖入: ${files[0].name} (${(files[0].size / 1024).toFixed(1)}KB)`);
+        const fileName = files[0].name;
+        const fileSize = (files[0].size / 1024).toFixed(1);
+        log(`文件已拖入: ${fileName} (${fileSize}KB)`);
+        showFileStatus(`📁 已上传文件：${fileName}`, 'success');
         processBtn.textContent = '🚀 开始处理';
       }
     });
@@ -684,7 +693,10 @@
     fileInput.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
         const file = e.target.files[0];
-        log(`文件已选择: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
+        const fileName = file.name;
+        const fileSize = (file.size / 1024).toFixed(1);
+        log(`文件已选择: ${fileName} (${fileSize}KB)`);
+        showFileStatus(`📁 已上传文件：${fileName}`, 'success');
         processBtn.textContent = '🚀 开始处理';
       }
     });
@@ -700,7 +712,7 @@
       }
     });
 
-    // Progress update
+    // Progress update function
     function updateProgress(percentage, message) {
       $('#progressFill').style.width = `${percentage}%`;
       $('#progressText').textContent = message;
@@ -791,30 +803,21 @@
         if (hasPM && parsedHour < 12) parsedHour += 12;
         if (hasAM && parsedHour === 12) parsedHour = 0;
         
-        // Calculate timezone offset
-        let offsetMinutes = 0;
-        if (timezone === 'PDT') offsetMinutes = -7 * 60;
-        else if (timezone === 'PST') offsetMinutes = -8 * 60;
-        else if (timezone === 'UTC') offsetMinutes = 0;
-        else if (timezone && /^GMT[+\-]\d{1,2}$/.test(timezone)) {
-          offsetMinutes = parseInt(timezone.slice(3)) * 60;
+        // Create a date in the source timezone and convert to China time
+        if (timezone === 'PDT') {
+          const pdtDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
+          return new Date(pdtDate.getTime() + 15 * 60 * 60 * 1000);
+        } else if (timezone === 'PST') {
+          const pstDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
+          return new Date(pstDate.getTime() + 16 * 60 * 60 * 1000);
+        } else if (timezone === 'UTC') {
+          const utcDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
+          return new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
+        } else {
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
         }
-        
-        // Create UTC timestamp and convert to China Standard Time (UTC+8)
-        const utcTime = Date.UTC(
-          parseInt(year), 
-          parseInt(month) - 1, 
-          parseInt(day), 
-          parsedHour - (offsetMinutes / 60), 
-          parseInt(minute), 
-          parseInt(second || '0')
-        );
-        
-        const chinaTime = utcTime + (8 * 60 * 60 * 1000);
-        return new Date(chinaTime);
       }
       
-      // Fallback
       const fallback = new Date(raw);
       return isNaN(fallback.getTime()) ? new Date() : fallback;
     }
@@ -824,44 +827,48 @@
       const conversations = [];
       const text = htmlToText(html);
       
-      // Enhanced boilerplate removal patterns
-      const boilerplatePatterns = [
-        /(产品：?\s*Gemini\s*Apps?)/gi,
-        /(商品：?\s*Gemini\s*Apps?)/gi,
-        /为什么此处会显示此活动记录[？?]/gi,
-        /由于以下设置处于已启用状态[\s\S]*?Gemini\s*Apps?\s*Activity/gi,
-        /您可以点击此处控制这些设置[。.]?/gi,
-        /\s*Gemini\s*Apps?\s*$/gmi,
-        /^\s*商品：?\s*$/gmi,
-        /^\s*产品：?\s*$/gmi
-      ];
+      const lines = text.split('\n');
+      const cleanLines = lines.filter(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return false;
+        if (/^商品：?\s*$/.test(trimmed)) return false;
+        if (/^产品：?\s*$/.test(trimmed)) return false;
+        if (/^Gemini\s*Apps?\s*$/.test(trimmed)) return false;
+        if (/^Activity\s*$/.test(trimmed)) return false;
+        if (/^为什么此处会显示此活动记录[？?]\s*$/.test(trimmed)) return false;
+        if (/^您可以点击此处控制这些设置[。.]?\s*$/.test(trimmed)) return false;
+        if (/^由于以下设置处于已启用状态/.test(trimmed)) return false;
+        return true;
+      });
       
-      // Clean the text multiple times
-      let cleanText = text;
-      for (let i = 0; i < 3; i++) {
-        boilerplatePatterns.forEach(pattern => {
-          cleanText = cleanText.replace(pattern, '');
-        });
-      }
+      let cleanText = cleanLines.join('\n');
+      cleanText = cleanText.replace(/Gemini\s*Apps?\s*(Prompted|Live\s*Prompt)/gi, '$1')
+                          .replace(/\n\s*(Prompted|Live\s*Prompt)\s*\n?/gi, '\n$1\n');
       
-      // Normalize "Prompted" markers
-      cleanText = cleanText.replace(/Gemini\s*Apps?\s*Prompted/gi, 'Prompted')
-                          .replace(/\n\s*Prompted\s*\n?/gi, '\nPrompted\n');
-      
-      // Split by Prompted blocks
-      const blocks = cleanText.split(/^\s*Prompted\s*$/im);
+      const blocks = cleanText.split(/^\s*(Prompted|Live\s*Prompt)\s*$/im);
       const timestampRegex = /(\d{4}年\d{1,2}月\d{1,2}日\s*(?:上午|下午)?\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)|(\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)/;
       
-      log(`开始解析 ${blocks.length - 1} 个对话块`);
+      log(`开始解析 ${Math.floor((blocks.length - 1) / 2)} 个对话块`);
       
-      for (let i = 1; i < blocks.length; i++) {
-        let block = blocks[i].trim();
+      for (let i = 1; i < blocks.length; i += 2) {
+        const blockType = blocks[i].trim();
+        let block = blocks[i + 1] ? blocks[i + 1].trim() : '';
+        
         if (block.length < 10) continue;
         
-        // Clean boilerplate from each block
-        boilerplatePatterns.forEach(pattern => {
-          block = block.replace(pattern, '');
+        const blockLines = block.split('\n');
+        const cleanBlockLines = blockLines.filter(line => {
+          const trimmed = line.trim();
+          if (!trimmed) return false;
+          if (/^商品：?\s*$/.test(trimmed)) return false;
+          if (/^产品：?\s*$/.test(trimmed)) return false;
+          if (/^Gemini\s*Apps?\s*$/.test(trimmed)) return false;
+          if (/^Activity\s*$/.test(trimmed)) return false;
+          return true;
         });
+        
+        block = cleanBlockLines.join('\n').trim();
+        if (block.length < 10) continue;
         
         const timestampMatch = block.match(timestampRegex);
         if (!timestampMatch) continue;
@@ -869,32 +876,38 @@
         const timestampStr = timestampMatch[0];
         const timestampIndex = timestampMatch.index;
         
-        // Split content at timestamp
-        const userPart = block.slice(0, timestampIndex).trim();
-        const geminiPart = block.slice(timestampIndex + timestampStr.length).trim();
+        const beforeTimestamp = block.slice(0, timestampIndex).trim();
+        const afterTimestamp = block.slice(timestampIndex + timestampStr.length).trim();
         
-        // Clean parts again
-        let userMessage = userPart;
-        let geminiMessage = geminiPart;
+        let userMessage = '';
+        let aiMessage = '';
+        let isLivePrompt = /Live\s*Prompt/i.test(blockType);
         
-        boilerplatePatterns.forEach(pattern => {
-          userMessage = userMessage.replace(pattern, '');
-          geminiMessage = geminiMessage.replace(pattern, '');
-        });
+        if (isLivePrompt) {
+          userMessage = beforeTimestamp || '系统预设操作提示';
+          aiMessage = afterTimestamp;
+        } else {
+          userMessage = beforeTimestamp;
+          aiMessage = afterTimestamp;
+        }
         
-        userMessage = userMessage.trim();
-        geminiMessage = geminiMessage.trim();
-        
-        if (userMessage || geminiMessage) {
-          conversations.push({
-            timestamp: parseTimestamp(timestampStr),
-            userMessage,
-            aiMessage: geminiMessage
-          });
+        if (userMessage || aiMessage) {
+          const parsedTime = parseTimestamp(timestampStr);
+          const now = new Date();
+          
+          if (parsedTime <= now) {
+            conversations.push({
+              timestamp: parsedTime,
+              userMessage,
+              aiMessage,
+              isSystemPrompt: isLivePrompt
+            });
+          } else {
+            log(`跳过未来时间: ${timestampStr} -> ${parsedTime.toLocaleString()}`);
+          }
         }
       }
       
-      // Deduplicate and sort
       const seen = new Set();
       const unique = [];
       
@@ -916,49 +929,64 @@
       
       const msPerDay = 24 * 60 * 60 * 1000;
       const intervalMs = intervalDays * msPerDay;
+      const now = new Date();
       
-      const earliest = Math.min(...conversations.map(c => c.timestamp.getTime()));
-      const latest = Math.max(...conversations.map(c => c.timestamp.getTime()));
+      const conversationTimes = conversations
+        .map(c => c.timestamp.getTime())
+        .filter(time => time <= now.getTime());
       
-      const startTime = new Date(earliest);
-      startTime.setHours(0, 0, 0, 0);
+      if (conversationTimes.length === 0) return [];
       
-      const endTime = new Date(latest);
-      endTime.setHours(23, 59, 59, 999);
+      const earliest = Math.min(...conversationTimes);
+      const latest = Math.min(Math.max(...conversationTimes), now.getTime());
+      
+      log(`实际对话时间范围: ${new Date(earliest).toLocaleDateString()} - ${new Date(latest).toLocaleDateString()}`);
+      log(`当前时间: ${now.toLocaleDateString()}，共有效对话: ${conversationTimes.length}`);
       
       const groups = [];
+      let currentStart = earliest;
       
-      for (let time = startTime.getTime(); time <= endTime.getTime(); time += intervalMs) {
-        const groupEnd = time + intervalMs - 1;
+      while (currentStart <= latest) {
+        const currentEnd = Math.min(currentStart + intervalMs - 1, latest);
+        
         const conversationsInRange = conversations.filter(conv => {
           const convTime = conv.timestamp.getTime();
-          return convTime >= time && convTime <= groupEnd;
+          return convTime >= currentStart && convTime <= currentEnd && convTime <= now.getTime();
         }).sort((a, b) => a.timestamp - b.timestamp);
         
         if (conversationsInRange.length > 0) {
+          const actualStart = Math.min(...conversationsInRange.map(c => c.timestamp.getTime()));
+          const actualEnd = Math.max(...conversationsInRange.map(c => c.timestamp.getTime()));
+          
           groups.push({
-            startDate: new Date(time),
-            endDate: new Date(groupEnd),
+            startDate: new Date(actualStart),
+            endDate: new Date(actualEnd),
             conversations: conversationsInRange
           });
+          
+          log(`分组: ${new Date(actualStart).toLocaleDateString()} - ${new Date(actualEnd).toLocaleDateString()}, 对话数: ${conversationsInRange.length}`);
+        }
+        
+        currentStart += intervalMs;
+        
+        if (currentStart > latest || currentStart > now.getTime()) {
+          break;
         }
       }
       
       return groups;
     }
 
-    // Generate TXT files
+    // Generate TXT files with proper encoding
     function generateTXTFiles(groups, intervalDays) {
       const files = [];
-      const intervalNames = {
-        1: '日', 3: '3日', 7: '周', 14: '双周', 
-        30: '月', 90: '季'
-      };
-      const intervalName = intervalNames[intervalDays] || `${intervalDays}日`;
       
       const formatDate = (date) => {
         return date.toLocaleDateString('zh-CN', { 
-          timeZone: 'Asia/Shanghai' 
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
         }).replace(/\//g, '-');
       };
       
@@ -972,31 +1000,49 @@
         const startDate = formatDate(group.startDate);
         const endDate = formatDate(group.endDate);
         
-        let content = `Gemini对话记录 - 第${index + 1}${intervalName}\n`;
-        content += `时间范围(东八区): ${startDate} 至 ${endDate}\n`;
-        content += `对话数量: ${group.conversations.length}\n`;
-        content += `生成时间: ${formatDateTime(new Date())}\n`;
-        content += `生成工具: Gemini活动记录分组工具 在线版\n`;
-        content += `${'='.repeat(60)}\n\n`;
+        let content = `Gemini对话记录 - ${startDate}`;
+        if (startDate !== endDate) {
+          content += ` 至 ${endDate}`;
+        }
+        content += `\n\n`;
+        content += `📅 时间范围: ${startDate} 至 ${endDate}\n`;
+        content += `💬 对话数量: ${group.conversations.length}\n`;
+        content += `🕐 生成时间: ${formatDateTime(new Date())}\n\n`;
         
         group.conversations.forEach((conversation, convIndex) => {
           const timestamp = formatDateTime(conversation.timestamp);
-          content += `[对话 ${convIndex + 1}] - ${timestamp}\n`;
-          content += `${'─'.repeat(40)}\n`;
+          
+          if (convIndex > 0) {
+            content += `┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n\n`;
+          }
+          
+          content += `对话 ${convIndex + 1}，🕐 ${timestamp}\n\n`;
           
           if (conversation.userMessage) {
-            content += `👤 User:\n${conversation.userMessage}\n\n`;
+            if (conversation.isSystemPrompt) {
+              content += `⚙️ 系统预设操作提示:\n${conversation.userMessage}\n\n`;
+            } else {
+              content += `👤 User:\n${conversation.userMessage}\n\n`;
+            }
           }
           
           if (conversation.aiMessage) {
             content += `🤖 Gemini:\n${conversation.aiMessage}\n\n`;
           }
-          
-          content += `${'─'.repeat(40)}\n\n`;
         });
         
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const filename = `Gemini对话记录-第${index + 1}${intervalName}-${startDate}.txt`;
+        // 添加 UTF-8 BOM 解决乱码问题
+        const bom = '\ufeff';
+        const contentWithBom = bom + content;
+        const blob = new Blob([contentWithBom], { type: 'text/plain;charset=utf-8' });
+        
+        // 修复文件名：使用实际日期而不是天数
+        let filename;
+        if (startDate === endDate) {
+          filename = `Gemini对话记录-${startDate}.txt`;
+        } else {
+          filename = `Gemini对话记录-${startDate}至${endDate}.txt`;
+        }
         
         files.push({
           name: filename,
@@ -1019,7 +1065,6 @@
         return;
       }
       
-      // UI state updates
       processBtn.disabled = true;
       processBtn.textContent = '⏳ 处理中...';
       progressSection.style.display = 'block';
@@ -1028,12 +1073,10 @@
       log(`开始处理文件: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
       
       try {
-        // Read file
         updateProgress(10, '正在读取文件...');
         const htmlContent = await readFileAsync(file);
         log(`文件读取完成，内容长度: ${htmlContent.length} 字符`);
         
-        // Parse conversations
         updateProgress(35, '正在解析对话记录...');
         const conversations = parseGeminiHTML(htmlContent);
         
@@ -1041,7 +1084,6 @@
           throw new Error('未找到有效的对话记录。请确认文件是从"Google我的活动 → Gemini Apps"导出的HTML文件。');
         }
         
-        // Group by time interval
         updateProgress(60, '正在按时间分组...');
         let intervalDays = parseInt($('#timeInterval').value);
         
@@ -1056,7 +1098,6 @@
         const groups = groupByTimeInterval(conversations, intervalDays);
         log(`分组完成，生成 ${groups.length} 个时间段`);
         
-        // Generate files
         updateProgress(85, '正在生成TXT文件...');
         processedFiles = generateTXTFiles(groups, intervalDays);
         
@@ -1117,7 +1158,7 @@
       log(`结果展示完成，共 ${processedFiles.length} 个文件可供下载`);
     }
 
-    // Download file
+    // Download file function
     function downloadFile(url, filename) {
       const link = document.createElement('a');
       link.href = url;
@@ -1128,9 +1169,20 @@
       log(`下载文件: ${filename}`);
     }
 
+    // Show file status
+    function showFileStatus(message, type = 'success') {
+      const statusDiv = $('#fileStatus');
+      statusDiv.textContent = message;
+      statusDiv.className = `message ${type}`;
+      statusDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 3000);
+    }
+
     // Show message
     function showMessage(message, type = 'info') {
-      // Remove existing messages
       const existingMessages = document.querySelectorAll('.message');
       existingMessages.forEach(msg => msg.remove());
       
@@ -1141,7 +1193,6 @@
       const uploadSection = document.querySelector('.upload-section');
       uploadSection.insertBefore(messageDiv, uploadSection.firstChild);
       
-      // Auto-remove after 5 seconds
       setTimeout(() => {
         if (messageDiv.parentNode) {
           messageDiv.remove();
@@ -1152,6 +1203,9 @@
     // Event listeners
     processBtn.addEventListener('click', processFile);
 
+    // Make downloadFile available globally
+    window.downloadFile = downloadFile;
+
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
       processedFiles.forEach(file => {
@@ -1160,7 +1214,8 @@
     });
 
     // Initialize
-    log('Gemini活动记录分组工具 在线版已加载完成');
+    log('Gemini活动记录分组工具 修复版已加载完成');
+    log('修复内容: 文件名显示、未来时间过滤、乱码问题');
     log('工具特点: 隐私安全(本地处理) | 智能解析 | 时间校准 | 批量导出');
   </script>
 </body>
