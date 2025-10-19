@@ -1,40 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gemini活动记录分组工具 - 免费在线版 | 按时间分组导出对话记录</title>
-  
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="免费在线工具，帮你将Google Gemini活动记录按时间智能分组并导出为TXT文件。支持自定义时间间隔，自动清理模板文字，东八区时间校准。">
-  <meta name="keywords" content="Gemini,Google,活动记录,对话记录,分组工具,导出,TXT,在线工具,免费">
-  <meta name="author" content="Gemini Parser Tool">
-  <meta name="robots" content="index, follow">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Gemini活动记录分组工具 - 免费在线版">
-  <meta property="og:description" content="将Google Gemini对话记录按时间智能分组，一键导出TXT文件。完全本地处理，保护隐私安全。">
-  <meta property="og:image" content="https://via.placeholder.com/1200x630/4285f4/ffffff?text=Gemini+Parser">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <title>Gemini活动记录分组工具</title>
   
   <style>
     :root {
-      --primary: #4285f4;
-      --secondary: #34a853;
-      --accent: #667eea;
-      --warning: #ffc107;
-      --success: #28a745;
-      --danger: #dc3545;
-      --text-primary: #212529;
-      --text-secondary: #6c757d;
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8f9fa;
-      --border: #dee2e6;
-      --shadow: 0 4px 15px rgba(0,0,0,0.1);
-      --radius: 12px;
+      --primary-blue: #A0C4DD;
+      --primary-pink: #E5B8D1;
+      --light-blue: #D8EAF5;
+      --light-pink: #F5E0ED;
+      --accent-blue: #8FB8D4;
+      --accent-pink: #DBA5C9;
+      --text-primary: #4A4A58;
+      --text-secondary: #7A7A88;
+      --bg-primary: #FAFAFA;
+      --bg-secondary: #F5F5F7;
+      --border: #D8D8E8;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --radius: 16px;
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
@@ -42,430 +27,601 @@
     
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-      background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-pink) 100%);
       min-height: 100vh; 
-      padding: 20px;
+      padding: 16px;
       line-height: 1.6;
+      color: var(--text-primary);
     }
     
     .container { 
-      max-width: 1100px; 
+      max-width: 900px; 
       margin: 0 auto; 
       background: var(--bg-primary); 
       border-radius: 20px;
-      box-shadow: 0 25px 80px rgba(0,0,0,0.15); 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08); 
       overflow: hidden;
     }
     
     .header { 
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%); 
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-pink) 100%); 
       color: white; 
-      padding: 48px 40px; 
+      padding: 20px 24px; 
       text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-      animation: shimmer 4s ease-in-out infinite;
-    }
-    
-    @keyframes shimmer {
-      0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
-      50% { transform: translateX(0%) translateY(0%) rotate(180deg); }
     }
     
     .header h1 { 
-      font-size: clamp(2.2em, 5vw, 3.5em);
-      font-weight: 800; 
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
+      font-size: 1.2em;
+      font-weight: 700; 
+      margin-bottom: 4px;
     }
     
     .header p {
-      font-size: clamp(1em, 3vw, 1.3em);
+      font-size: 0.8em;
       opacity: 0.95;
-      position: relative;
-      z-index: 1;
-      font-weight: 400;
     }
     
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-top: 32px;
-      position: relative;
-      z-index: 1;
+    /* 功能设置区域 */
+    .controls-section { 
+      padding: 16px; 
+      background: white;
+      border-bottom: 2px solid var(--border);
     }
     
-    .feature-item {
-      background: rgba(255,255,255,0.15);
-      padding: 20px;
+    .section-title {
+      font-size: 0.9em;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .id-settings {
+      background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-pink) 100%);
+      padding: 12px;
       border-radius: var(--radius);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 12px;
+      border: 2px solid var(--border);
+    }
+    
+    .id-settings h3 {
+      font-size: 0.8em;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+    
+    .id-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    
+    .id-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .id-input-group label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.75em;
+    }
+    
+    .id-input-group input {
+      padding: 8px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      background: white;
       transition: var(--transition);
     }
     
-    .feature-item:hover {
-      transform: translateY(-2px);
-      background: rgba(255,255,255,0.25);
-    }
-    
-    .feature-item h3 {
-      font-size: 1em;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    
-    .feature-item p {
-      font-size: 0.85em;
-      opacity: 0.9;
-    }
-    
-    .upload-section { 
-      padding: 40px; 
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(to bottom, #fafbff 0%, var(--bg-secondary) 100%);
-    }
-    
-    .warning { 
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
-      color: #856404; 
-      padding: 24px; 
-      border-radius: var(--radius); 
-      border-left: 5px solid var(--warning);
-      box-shadow: var(--shadow);
-      margin-bottom: 32px;
-      font-weight: 500;
-      line-height: 1.7;
-    }
-    
-    .warning strong { font-weight: 700; }
-    .warning a { color: #856404; text-decoration: underline; }
-    .warning a:hover { text-decoration: none; }
-    
-    .upload-area { 
-      border: 3px dashed var(--primary); 
-      border-radius: 20px; 
-      padding: 60px 20px; 
-      cursor: pointer;
-      transition: var(--transition); 
-      background: linear-gradient(135deg, #fafbff 0%, #f0f8ff 100%); 
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .upload-area::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(66, 133, 244, 0.1), transparent);
-      transition: left 0.6s;
-    }
-    
-    .upload-area:hover::before { left: 100%; }
-    
-    .upload-area:hover, .upload-area.dragover { 
-      border-color: var(--secondary); 
-      background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%); 
-      transform: translateY(-3px) scale(1.01);
-      box-shadow: 0 12px 35px rgba(52, 168, 83, 0.25);
-    }
-    
-    .upload-icon { 
-      font-size: 64px; 
-      margin-bottom: 24px;
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-    }
-    
-    .upload-area h3 {
-      font-size: 1.6em;
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-    
-    .upload-subtitle {
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-    
-    .format-badges {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    .format-badge {
-      background: var(--primary);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      font-weight: 600;
-    }
-    
-    #fileInput { display: none; }
-    
-    .controls { 
-      padding: 40px; 
-      background: linear-gradient(to right, var(--bg-secondary) 0%, #e9ecef 100%);
-      border-bottom: 1px solid var(--border);
+    .id-input-group input:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(160, 196, 221, 0.2);
     }
     
     .control-group { 
       display: flex; 
-      gap: 24px; 
+      gap: 10px; 
       align-items: center; 
       flex-wrap: wrap; 
-      margin: 20px 0;
+      margin: 10px 0;
     }
     
     .control-group label { 
-      font-weight: 700; 
-      min-width: 140px; 
-      font-size: 16px;
+      font-weight: 600; 
+      min-width: 100px; 
+      font-size: 0.8em;
     }
     
-    select, input, button { 
-      padding: 16px 24px; 
+    select, input[type="number"] { 
+      padding: 8px 12px; 
       border: 2px solid var(--border); 
-      border-radius: var(--radius); 
-      font-size: 16px;
-      transition: var(--transition);
-      font-family: inherit;
-      font-weight: 500;
-    }
-    
-    select:focus, input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.15);
-    }
-    
-    .btn-primary { 
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: 700;
-      font-size: 18px;
-      padding: 18px 36px;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    .btn-primary:hover:not(:disabled)::before { left: 100%; }
-    
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.4);
-    }
-    
-    .btn-primary:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .progress-section { 
-      padding: 32px 40px; 
-      display: none; 
-      background: var(--bg-secondary);
-    }
-    
-    .progress-bar { 
-      height: 14px; 
-      background: #e9ecef; 
       border-radius: 10px; 
-      overflow: hidden;
-      position: relative;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .progress-fill { 
-      height: 100%; 
-      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent)); 
-      width: 0%; 
-      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      border-radius: 10px;
-    }
-    
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
-      animation: progress-shine 2s infinite;
-    }
-    
-    @keyframes progress-shine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    
-    .progress-text { 
-      margin-top: 16px; 
-      text-align: center; 
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-    
-    .results { 
-      padding: 40px; 
-      display: none;
-      background: linear-gradient(to bottom, var(--bg-primary) 0%, #fafbff 100%);
-    }
-    
-    .stats { 
-      background: linear-gradient(135deg, var(--bg-secondary) 0%, #e9ecef 100%); 
-      padding: 32px; 
-      border-radius: 18px; 
-      margin-bottom: 32px;
-      box-shadow: var(--shadow);
-    }
-    
-    .stats-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-      gap: 24px;
-    }
-    
-    .stat-item { 
-      text-align: center;
-      padding: 24px;
-      background: rgba(255,255,255,0.9);
-      border-radius: var(--radius);
+      font-size: 13px;
       transition: var(--transition);
+      background: white;
+      flex: 1;
+      min-width: 160px;
     }
     
-    .stat-item:hover { transform: translateY(-4px); }
+    select:focus, input:focus { 
+      outline: none; 
+      border-color: var(--primary-blue); 
+      box-shadow: 0 0 0 3px rgba(160, 196, 221, 0.2);
+    }
     
-    .stat-number { 
-      font-size: 3em; 
-      font-weight: 900; 
-      color: var(--primary);
+    select { 
+      cursor: pointer;
+    }
+    
+    #customDaysInput {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    #customDaysInput.show {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 上传区域 */
+    .upload-section { 
+      padding: 16px; 
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .upload-area { 
+      border: 3px dashed var(--primary-blue); 
+      border-radius: 12px; 
+      padding: 20px 16px; 
+      cursor: pointer;
+      transition: var(--transition); 
+      background: white; 
+      text-align: center;
+    }
+    
+    .upload-area:hover, .upload-area.dragover { 
+      border-color: var(--primary-pink); 
+      background: var(--light-pink); 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(229, 184, 209, 0.3);
+    }
+    
+    .upload-icon { 
+      font-size: 32px; 
       margin-bottom: 8px;
+      color: var(--primary-blue);
+    }
+    
+    .upload-area h3 {
+      font-size: 0.9em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    
+    .upload-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-size: 0.7em;
+    }
+    
+    #fileInput { display: none; }
+    
+    .file-status {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.8em;
+      display: none;
+    }
+    
+    .file-status.show {
       display: block;
     }
     
-    .stat-label {
-      color: var(--text-secondary);
-      font-weight: 700;
-      font-size: 15px;
+    .file-status.success {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #2E7D32;
+      border-left: 4px solid #4CAF50;
     }
     
-    .file-list { display: grid; gap: 20px; }
+    .file-status.error {
+      background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+      color: #C62828;
+      border-left: 4px solid #F44336;
+    }
     
-    .file-item { 
-      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); 
-      border: 2px solid var(--border); 
-      border-radius: 18px; 
-      padding: 24px; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
+    /* 按钮 */
+    button { 
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-pink) 100%); 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
       transition: var(--transition);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: 0 3px 10px rgba(160, 196, 221, 0.3);
+      width: 100%;
+      margin-top: 10px;
     }
     
-    .file-item:hover { 
-      border-color: var(--primary); 
-      box-shadow: var(--shadow);
-      transform: translateY(-2px);
+    button:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 5px 16px rgba(160, 196, 221, 0.4);
     }
     
-    .file-info { display: flex; align-items: center; gap: 20px; flex: 1; }
-    .file-icon { font-size: 40px; }
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled { 
+      opacity: 0.5; 
+      cursor: not-allowed; 
+      transform: none;
+    }
+    
+    /* 进度区域 */
+    .progress-section {
+      padding: 16px;
+      background: white;
+      border-bottom: 2px solid var(--border);
+      display: none;
+    }
+    
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-pink) 100%);
+      transition: width 0.3s ease;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7em;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .progress-text {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    
+    /* 结果区域 */
+    .results-section {
+      padding: 16px;
+      background: white;
+      display: none;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-pink) 100%);
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      border: 2px solid var(--border);
+    }
+    
+    .stat-value {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 0.7em;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .file-list {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+    
+    .file-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .file-list::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 3px;
+    }
+    
+    .file-list::-webkit-scrollbar-thumb {
+      background: var(--primary-blue);
+      border-radius: 3px;
+    }
+    
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: var(--transition);
+    }
+    
+    .file-item:hover {
+      border-color: var(--primary-blue);
+      box-shadow: 0 2px 8px rgba(160, 196, 221, 0.2);
+    }
+    
+    .file-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    
+    .file-icon {
+      color: var(--primary-blue);
+      flex-shrink: 0;
+    }
+    
+    .file-details {
+      flex: 1;
+      min-width: 0;
+    }
     
     .file-details h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-size: 0.85em;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .file-meta {
+      font-size: 0.7em;
       color: var(--text-secondary);
-      font-size: 14px;
-      font-weight: 500;
     }
     
-    .download-btn { 
-      background: linear-gradient(135deg, var(--primary) 0%, #1a73e8 100%); 
-      color: white; 
-      border: none; 
-      padding: 14px 28px; 
-      border-radius: var(--radius); 
-      cursor: pointer; 
-      font-weight: 700;
-      font-size: 16px;
-      transition: var(--transition);
-      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
     }
     
-    .download-btn:hover {
-      background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    .file-item button {
+      width: auto;
+      margin: 0;
+      padding: 6px 14px;
+      font-size: 0.75em;
     }
     
     .preview-btn {
-      background: linear-gradient(135deg, var(--secondary) 0%, #2e7d32 100%);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--primary-blue) 100%);
+    }
+    
+    .download-btn {
+      background: linear-gradient(135deg, var(--accent-pink) 0%, var(--primary-pink) 100%);
+    }
+    
+    .batch-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    
+    .batch-actions button {
+      flex: 1;
+      min-width: 140px;
+      font-size: 0.8em;
+    }
+    
+    /* 日志区域 - 可折叠 */
+    .log-section {
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .log-header {
+      padding: 12px 16px;
       cursor: pointer;
-      font-weight: 700;
-      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
       transition: var(--transition);
-      box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
-      margin-left: 12px;
     }
     
-    .preview-btn:hover {
-      background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+    .log-header:hover {
+      background: rgba(160, 196, 221, 0.1);
     }
     
+    .log-header h3 {
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+    
+    .log-toggle {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      transition: transform 0.3s ease;
+    }
+    
+    .log-toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+    
+    .log-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7em;
+      line-height: 1.4;
+    }
+    
+    .log-body.show {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+    
+    .log-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .log-body::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    
+    .log-body::-webkit-scrollbar-thumb {
+      background: var(--primary-blue);
+      border-radius: 3px;
+    }
+    
+    .log-entry {
+      padding: 4px 0;
+      color: var(--text-secondary);
+    }
+    
+    .log-entry.error {
+      color: #C62828;
+    }
+    
+    .log-entry.success {
+      color: #2E7D32;
+    }
+    
+    .log-entry.info {
+      color: #1976D2;
+    }
+    
+    /* 使用说明 - 可折叠 */
+    .info-section {
+      background: white;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .info-header {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      transition: var(--transition);
+    }
+    
+    .info-header:hover {
+      background: rgba(160, 196, 221, 0.1);
+    }
+    
+    .info-header h3 {
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+    
+    .info-toggle {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      transition: transform 0.3s ease;
+    }
+    
+    .info-toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+    
+    .info-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    
+    .info-body.show {
+      max-height: 800px;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+    
+    .info-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .info-body::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+    
+    .info-body::-webkit-scrollbar-thumb {
+      background: var(--primary-blue);
+      border-radius: 3px;
+    }
+    
+    .info-body p {
+      margin-bottom: 12px;
+      font-size: 0.85em;
+      line-height: 1.6;
+    }
+    
+    .info-body strong {
+      color: var(--text-primary);
+    }
+    
+    .info-body ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+    
+    .info-body li {
+      margin-bottom: 8px;
+      font-size: 0.8em;
+      line-height: 1.5;
+    }
+    
+    .info-body a {
+      color: var(--primary-blue);
+      text-decoration: underline;
+    }
+    
+    /* 预览模态框 */
     .modal {
       display: none;
       position: fixed;
@@ -474,8 +630,7 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(5px);
+      background-color: rgba(0,0,0,0.5);
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -483,845 +638,668 @@
     .modal-content {
       background-color: var(--bg-primary);
       margin: 3% auto;
-      border-radius: 20px;
-      width: 90%;
+      width: 85%;
       max-width: 900px;
-      max-height: 85vh;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
     
     .modal-header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-pink) 100%);
       color: white;
-      padding: 20px 28px;
+      padding: 16px 20px;
+      border-radius: 20px 20px 0 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     
-    .modal-title {
-      font-size: 1.2em;
-      font-weight: 700;
-      margin: 0;
+    .modal-header h2 {
+      font-size: 1em;
+      margin-bottom: 6px;
     }
     
     .modal-stats {
-      font-size: 0.85em;
-      opacity: 0.9;
-      margin-top: 4px;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.8em;
+    }
+    
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .modal-body::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+    
+    .modal-body::-webkit-scrollbar-thumb {
+      background: var(--primary-blue);
+      border-radius: 3px;
+    }
+    
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 2px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      background: var(--bg-secondary);
+      border-radius: 0 0 20px 20px;
     }
     
     .close {
       color: white;
+      float: right;
       font-size: 28px;
-      font-weight: bold;
+      font-weight: 300;
+      line-height: 1;
       cursor: pointer;
-      border: none;
-      background: none;
-      opacity: 0.8;
       transition: var(--transition);
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      opacity: 0.8;
     }
     
     .close:hover {
       opacity: 1;
-      transform: scale(1.1);
-    }
-    
-    .modal-body {
-      padding: 24px;
-      overflow-y: auto;
-      flex: 1;
-      background: var(--bg-primary);
+      transform: rotate(90deg);
     }
     
     .conversation-item {
-      margin-bottom: 28px;
-      animation: fadeInUp 0.3s ease-out;
-    }
-    
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border);
     }
     
     .conversation-header {
-      font-size: 0.95em;
-      font-weight: 600;
       color: var(--text-secondary);
-      margin-bottom: 16px;
-      text-align: center;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, var(--bg-secondary) 0%, #e9ecef 100%);
-      border-radius: var(--radius);
-      border-left: 4px solid var(--primary);
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      font-size: 0.75em;
     }
     
     .message-bubble {
-      margin: 12px 0;
-      padding: 16px 20px;
-      border-radius: 16px;
-      position: relative;
-      word-wrap: break-word;
-      line-height: 1.5;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      font-size: 14px;
+      margin: 10px 0;
+      padding: 10px 14px;
+      border-radius: 10px;
     }
     
     .user-bubble {
-      background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
-      border: 1px solid #b3d9f0;
-      margin-left: 32px;
-      border-radius: 16px 16px 4px 16px;
-    }
-    
-    .user-bubble::before {
-      content: '👤';
-      position: absolute;
-      left: -28px;
-      top: 16px;
-      font-size: 20px;
+      background: linear-gradient(135deg, var(--light-blue) 0%, #F0F8FF 100%);
+      border-left: 3px solid var(--primary-blue);
     }
     
     .ai-bubble {
-      background: linear-gradient(135deg, #f8f4ff 0%, #ede7f6 100%);
-      border: 1px solid #d1c4e9;
-      margin-right: 32px;
-      border-radius: 16px 16px 16px 4px;
-    }
-    
-    .ai-bubble::before {
-      content: '🤖';
-      position: absolute;
-      right: -28px;
-      top: 16px;
-      font-size: 20px;
+      background: linear-gradient(135deg, var(--light-pink) 0%, #FFF0F8 100%);
+      border-left: 3px solid var(--primary-pink);
     }
     
     .system-bubble {
-      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-      border: 1px solid #ffd54f;
-      margin: 0 16px;
-      border-radius: 12px;
-    }
-    
-    .system-bubble::before {
-      content: '⚙️';
-      position: absolute;
-      left: -28px;
-      top: 16px;
-      font-size: 20px;
+      background: linear-gradient(135deg, #F5F5F7 0%, #FAFAFA 100%);
+      border-left: 3px solid var(--text-secondary);
     }
     
     .message-label {
       font-weight: 600;
-      font-size: 0.8em;
+      margin-bottom: 5px;
+      font-size: 0.7em;
       color: var(--text-secondary);
-      margin-bottom: 6px;
-      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .message-content {
-      font-size: 14px;
-      white-space: pre-wrap;
       line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: var(--text-primary);
+      font-size: 0.8em;
     }
     
-    .debug { 
-      padding: 24px 40px; 
-      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
-      font-family: 'Courier New', monospace; 
-      color: #ecf0f1; 
-      font-size: 13px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .debug::-webkit-scrollbar { width: 8px; }
-    .debug::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-    .debug::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
-    
-    .footer {
-      padding: 32px 40px;
-      background: var(--text-primary);
-      color: white;
-      text-align: center;
-    }
-    
-    .footer h3 { margin-bottom: 16px; font-weight: 700; }
-    .footer p { opacity: 0.8; margin-bottom: 8px; }
-    
-    .footer-links {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-    
-    .footer-link {
-      color: var(--secondary);
-      text-decoration: none;
-      font-weight: 600;
-      transition: var(--transition);
-    }
-    
-    .footer-link:hover { color: white; transform: translateY(-1px); }
-    
-    .message {
-      padding: 16px 20px;
-      border-radius: var(--radius);
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-    
-    .message.success {
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      color: var(--success);
-      border-left: 5px solid var(--success);
-    }
-    
-    .message.error {
-      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-      color: var(--danger);
-      border-left: 5px solid var(--danger);
-    }
-    
-    @media (max-width: 768px) { 
+    @media (max-width: 768px) {
       body { padding: 10px; }
-      .container { border-radius: 16px; }
-      .header { padding: 32px 20px; }
-      .upload-section, .controls, .results { padding: 24px 20px; }
-      .control-group { flex-direction: column; align-items: flex-start; gap: 16px; } 
-      .control-group label { min-width: auto; } 
-      .file-item { flex-direction: column; gap: 20px; text-align: center; }
-      .file-item > div:last-child { 
-        display: flex; 
-        gap: 10px; 
-        justify-content: center;
-        flex-wrap: nowrap;
-      }
-      .preview-btn, .download-btn { 
-        flex: 1; 
-        min-width: 70px; 
-        font-size: 12px;
-        padding: 10px 16px;
-      }
-      .upload-area { padding: 40px 16px; }
-      .features { grid-template-columns: 1fr; }
-      .btn-primary { width: 100%; }
-      
-      .modal-content { 
-        width: 95%; 
-        max-height: 90vh; 
-        margin: 5% auto; 
-      }
-      .modal-header { padding: 20px; }
-      .modal-body { padding: 20px; }
-      .user-bubble { margin-left: 20px; }
-      .ai-bubble { margin-right: 20px; }
-      .user-bubble::before, .ai-bubble::before { display: none; }
-      .message-bubble { padding: 16px 20px; }
+      .header { padding: 18px 16px; }
+      .controls-section, .upload-section, .results-section { padding: 14px; }
+      .control-group { flex-direction: column; align-items: stretch; }
+      .control-group label { min-width: auto; }
+      .file-item { flex-direction: column; align-items: stretch; }
+      .file-actions { width: 100%; }
+      .file-item button { width: 100%; }
+      .modal-content { width: 95%; margin: 5% auto; }
+      .stats { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <h1>📝 Gemini活动记录分组工具</h1>
-      <p>智能解析 · 按时间分组 · 一键导出 · 完全免费</p>
-      
-      <div class="features">
-        <div class="feature-item">
-          <h3>🔒 隐私安全</h3>
-          <p>本地处理，数据不上传</p>
-        </div>
-        <div class="feature-item">
-          <h3>⚡ 智能解析</h3>
-          <p>自动识别对话内容</p>
-        </div>
-        <div class="feature-item">
-          <h3>🕐 时间校准</h3>
-          <p>东八区时间自动转换</p>
-        </div>
-        <div class="feature-item">
-          <h3>📁 批量导出</h3>
-          <p>按时间段生成TXT文件</p>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <section class="upload-section">
-        <div class="warning">
-          <strong>📋 详细使用说明：</strong>
-          <br><br><strong>🔸 App操作路径：</strong>
-          <br>Google Gemini → 隐私信息中心 → 请求删除内容和导出数据 → 导出（产品选择：我的活动）→ 压缩包找到Gemini Apps → 我的活动记录.html
-          <br><br><strong>🔸 Web操作路径：</strong>
-          <br>Google活动中心 → 头像 → 管理您的账号 → 数据和隐私设置 → 下载您的数据 → 产品选择"我的活动" → 同上
-          <br><br><strong>🔸 处理步骤：</strong>
-          <br>1. 按上述路径获取HTML文件
-          <br>2. 将「我的活动记录.html」拖入下方区域
-          <br>3. 选择时间分组间隔，点击开始处理
-        </div>
-        
-        <div class="upload-area" id="dropZone">
-          <div class="upload-icon">📁</div>
-          <h3>选择或拖放 Gemini 导出的 HTML 文件</h3>
-          <p class="upload-subtitle">支持的格式和编码</p>
-          <div class="format-badges">
-            <span class="format-badge">HTML</span>
-            <span class="format-badge">UTF-8</span>
-            <span class="format-badge">UTF-16</span>
-          </div>
-        </div>
-        <input type="file" id="fileInput" accept=".html,.htm">
-      </section>
-
-      <section class="controls">
-        <div id="fileStatus" class="message success" style="display: none;"></div>
-        <div class="control-group">
-          <label for="timeInterval">📅 分组间隔:</label>
-          <select id="timeInterval">
-            <option value="1">1天</option>
-            <option value="3">3天</option>
-            <option value="7" selected>1周</option>
-            <option value="14">2周</option>
-            <option value="30">1个月</option>
-            <option value="90">3个月</option>
-            <option value="custom">自定义天数</option>
-          </select>
-          <input type="number" id="customDays" placeholder="输入天数" min="1" max="365" style="display:none; width:140px;">
-        </div>
-        <div class="control-group">
-          <button class="btn-primary" id="processBtn">🚀 开始处理</button>
-        </div>
-      </section>
-
-      <section class="progress-section" id="progressSection">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-text" id="progressText">准备处理文件...</div>
-      </section>
-
-      <section id="results" class="results">
-        <div class="stats">
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-number" id="totalConversations">0</span>
-              <div class="stat-label">💬 总对话数</div>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number" id="totalFiles">0</span>
-              <div class="stat-label">📄 生成文件数</div>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number" id="dateRange">-</span>
-              <div class="stat-label">🕐 时间范围</div>
-            </div>
-          </div>
-        </div>
-        <div id="fileList" class="file-list"></div>
-      </section>
-    </main>
-
-    <div class="debug">
-      <div><strong>🔍 处理日志：</strong></div>
-      <pre id="debugLog"></pre>
+    <div class="header">
+      <h1>Gemini活动记录分组工具</h1>
+      <p>智能解析 · 按时间分组 · 批量导出</p>
     </div>
-
-    <footer class="footer">
-      <h3>关于本工具</h3>
-      <p>完全免费的在线工具，帮助您整理和导出Google Gemini对话记录</p>
-      <p>所有数据在您的浏览器本地处理，绝不上传到任何服务器</p>
-      <div class="footer-links">
-        <a href="#" class="footer-link">使用说明</a>
-        <a href="#" class="footer-link">隐私政策</a>
-        <a href="#" class="footer-link">意见反馈</a>
-        <a href="https://github.com" class="footer-link" target="_blank">GitHub</a>
+    
+    <!-- 功能设置区域 -->
+    <div class="controls-section">
+      <h2 class="section-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.8l-4.2 4.2m0 5.2l-4.2 4.2m11.8-9.2h-6m-6 0H1m13.8-5.2l-4.2 4.2m-5.2 0L1 1"/>
+        </svg>
+        功能设置
+      </h2>
+      
+      <!-- ID自定义设置 -->
+      <div class="id-settings">
+        <h3>自定义角色名称</h3>
+        <div class="id-settings-grid">
+          <div class="id-input-group">
+            <label for="userIdInput">用户名称:</label>
+            <input type="text" id="userIdInput" placeholder="User" value="User">
+          </div>
+          <div class="id-input-group">
+            <label for="assistantIdInput">助手名称:</label>
+            <input type="text" id="assistantIdInput" placeholder="Gemini" value="Gemini">
+          </div>
+        </div>
       </div>
-    </footer>
+      
+      <div class="control-group">
+        <label for="timeInterval">时间分组间隔:</label>
+        <select id="timeInterval">
+          <option value="1">1天</option>
+          <option value="3">3天</option>
+          <option value="7" selected>7天</option>
+          <option value="14">14天</option>
+          <option value="30">30天</option>
+          <option value="custom">自定义天数</option>
+        </select>
+      </div>
+      
+      <div class="control-group" id="customDaysInput">
+        <label for="customDays">自定义天数:</label>
+        <input type="number" id="customDays" min="1" max="365" placeholder="输入1-365之间的天数">
+      </div>
+    </div>
+    
+    <!-- 上传区域 -->
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <h3>拖拽或点击上传文件</h3>
+        <p class="upload-subtitle">支持从Google我的活动导出的HTML文件</p>
+      </div>
+      
+      <input type="file" id="fileInput" accept=".html,.htm">
+      <div id="fileStatus" class="file-status"></div>
+      
+      <button id="processBtn">开始处理</button>
+    </div>
+    
+    <!-- 进度区域 -->
+    <div class="progress-section" id="progressSection">
+      <h2 class="section-title" style="margin-bottom: 12px;">处理进度</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
+      <div class="progress-text" id="progressText">准备中...</div>
+    </div>
+    
+    <!-- 结果区域 -->
+    <div class="results-section" id="resultsSection">
+      <h2 class="section-title" style="margin-bottom: 12px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        处理结果
+      </h2>
+      
+      <div class="stats">
+        <div class="stat-card">
+          <span class="stat-value" id="totalConversations">0</span>
+          <span class="stat-label">总对话数</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="totalFiles">0</span>
+          <span class="stat-label">生成文件数</span>
+        </div>
+        <div class="stat-card" style="grid-column: span 2;">
+          <span class="stat-value" id="dateRange" style="font-size: 0.9em;">-</span>
+          <span class="stat-label">时间范围</span>
+        </div>
+      </div>
+      
+      <div class="file-list" id="fileList"></div>
+      
+      <div class="batch-actions">
+        <button onclick="selectAllFiles()">全选</button>
+        <button onclick="deselectAllFiles()">取消全选</button>
+        <button onclick="downloadSelectedFiles()">下载选中 (<span id="selectedCount">0</span>)</button>
+        <button onclick="downloadAllFiles()">下载全部</button>
+      </div>
+    </div>
+    
+    <!-- 日志区域 -->
+    <div class="log-section">
+      <div class="log-header" onclick="toggleLog()">
+        <h3>处理日志</h3>
+        <span class="log-toggle" id="logToggle">▼</span>
+      </div>
+      <div class="log-body" id="logBody"></div>
+    </div>
+    
+    <!-- 使用说明 -->
+    <div class="info-section">
+      <div class="info-header" onclick="toggleInfo()">
+        <h3>使用说明</h3>
+        <span class="info-toggle" id="infoToggle">▼</span>
+      </div>
+      <div class="info-body" id="infoBody">
+        <p><strong>如何获取Gemini活动记录:</strong></p>
+        <ol>
+          <li>访问 <a href="https://myaccount.google.com" target="_blank">myaccount.google.com</a></li>
+          <li>点击"数据和隐私设置"</li>
+          <li>选择"下载您的数据"</li>
+          <li>在产品列表中勾选"我的活动"（注意：Gemini Apps选项只包含指令不包含聊天内容，请务必选择"我的活动"）</li>
+          <li>导出格式选择HTML，下载并解压文件</li>
+          <li>在解压后的文件夹中找到Gemini文件夹下的"我的活动记录.html"</li>
+          <li>将该HTML文件上传到本工具</li>
+        </ol>
+        
+        <p style="margin-top: 20px;"><strong>功能说明:</strong></p>
+        <p>本工具完全在本地处理您的数据，不会上传到任何服务器。支持自定义时间分组间隔，自动转换时区为东八区（北京时间），并将对话记录按时间分组导出为TXT文件。可以选择全部下载或勾选部分文件下载。</p>
+      </div>
+    </div>
   </div>
-
-  <!-- Preview Modal -->
+  
+  <!-- 预览模态框 -->
   <div id="previewModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <div>
-          <h2 id="modalTitle" class="modal-title">对话记录预览</h2>
-          <div id="modalStats" class="modal-stats">加载中...</div>
+          <h2 id="modalTitle">对话记录预览</h2>
+          <div class="modal-stats" id="modalStats">0 条对话</div>
         </div>
-        <button class="close" onclick="closeModal()">&times;</button>
+        <span class="close" onclick="closeModal()">&times;</span>
       </div>
-      <div id="modalBody" class="modal-body">
-        <p>加载中...</p>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button onclick="closeModal()" style="width: auto; padding: 8px 20px; font-size: 0.8em;">关闭</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Debug logging
-    const debugLog = document.getElementById('debugLog');
-    const log = (...args) => {
-      const timestamp = new Date().toLocaleTimeString('zh-CN');
-      debugLog.textContent += `[${timestamp}] ${args.join(' ')}\n`;
-      debugLog.scrollTop = debugLog.scrollHeight;
-    };
-
-    // DOM elements
-    const $ = sel => document.querySelector(sel);
-    const dropZone = $('#dropZone');
+    // DOM元素引用
+    const $ = (selector) => document.querySelector(selector);
+    const uploadArea = $('#uploadArea');
     const fileInput = $('#fileInput');
+    const fileStatus = $('#fileStatus');
     const processBtn = $('#processBtn');
     const progressSection = $('#progressSection');
-    const resultsSection = $('#results');
-
-    // Global state
+    const progressBar = $('#progressBar');
+    const progressText = $('#progressText');
+    const resultsSection = $('#resultsSection');
+    const logBody = $('#logBody');
+    const timeIntervalSelect = $('#timeInterval');
+    const customDaysInput = $('#customDaysInput');
+    const userIdInput = $('#userIdInput');
+    const assistantIdInput = $('#assistantIdInput');
+    
+    let currentFile = null;
     let processedFiles = [];
-
-    // Drag and drop handlers
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropZone.classList.add('dragover');
-      });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropZone.classList.remove('dragover');
-      });
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        fileInput.files = files;
-        const fileName = files[0].name;
-        const fileSize = (files[0].size / 1024).toFixed(1);
-        log(`文件已拖入: ${fileName} (${fileSize}KB)`);
-        showFileStatus(`📁 已上传文件：${fileName}`, 'success');
-        processBtn.textContent = '🚀 开始处理';
+    
+    // 折叠功能
+    function toggleLog() {
+      const body = $('#logBody');
+      const toggle = $('#logToggle');
+      body.classList.toggle('show');
+      toggle.classList.toggle('collapsed');
+    }
+    
+    function toggleInfo() {
+      const body = $('#infoBody');
+      const toggle = $('#infoToggle');
+      body.classList.toggle('show');
+      toggle.classList.toggle('collapsed');
+    }
+    
+    // 日志函数
+    function log(message, type = 'info') {
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry ${type}`;
+      logEntry.textContent = `[${new Date().toLocaleTimeString('zh-CN')}] ${message}`;
+      logBody.appendChild(logEntry);
+      logBody.scrollTop = logBody.scrollHeight;
+      
+      // 自动展开日志
+      if (!logBody.classList.contains('show')) {
+        logBody.classList.add('show');
+        $('#logToggle').classList.remove('collapsed');
       }
+    }
+    
+    // 显示文件状态
+    function showFileStatus(message, type = 'success') {
+      fileStatus.textContent = message;
+      fileStatus.className = `file-status ${type} show`;
+      setTimeout(() => {
+        fileStatus.classList.remove('show');
+      }, 5000);
+    }
+    
+    // 更新进度
+    function updateProgress(percent, text = '') {
+      progressBar.style.width = `${percent}%`;
+      progressBar.textContent = `${percent}%`;
+      if (text) {
+        progressText.textContent = text;
+      }
+    }
+    
+    // 文件上传交互
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
     });
-
-    dropZone.addEventListener('click', () => fileInput.click());
-
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    
     fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        const file = e.target.files[0];
-        const fileName = file.name;
-        const fileSize = (file.size / 1024).toFixed(1);
-        log(`文件已选择: ${fileName} (${fileSize}KB)`);
-        showFileStatus(`📁 已上传文件：${fileName}`, 'success');
-        processBtn.textContent = '🚀 开始处理';
-      }
+      handleFiles(e.target.files);
     });
-
-    // Time interval selection
-    $('#timeInterval').addEventListener('change', function() {
-      const customInput = $('#customDays');
-      if (this.value === 'custom') {
-        customInput.style.display = 'inline-block';
-        customInput.focus();
+    
+    function handleFiles(files) {
+      if (files.length === 0) return;
+      
+      const file = files[0];
+      if (!file.name.match(/\.(html|htm)$/i)) {
+        showFileStatus('请上传HTML格式的文件', 'error');
+        return;
+      }
+      
+      currentFile = file;
+      showFileStatus(`文件已加载: ${file.name}`, 'success');
+      log(`文件已选择: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+    }
+    
+    // 时间间隔选择
+    timeIntervalSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'custom') {
+        customDaysInput.classList.add('show');
       } else {
-        customInput.style.display = 'none';
+        customDaysInput.classList.remove('show');
       }
     });
-
-    // Progress update function
-    function updateProgress(percentage, message) {
-      $('#progressFill').style.width = `${percentage}%`;
-      $('#progressText').textContent = message;
-    }
-
-    // File reading with encoding detection
-    function readFileAsync(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const buffer = reader.result;
-            let text = new TextDecoder('utf-8', {fatal: false}).decode(buffer);
-            
-            if (text.includes('\u0000')) {
-              text = new TextDecoder('utf-16le', {fatal: false}).decode(buffer);
-            }
-            
-            resolve(text);
-          } catch (error) {
-            reject(new Error('文件编码不支持或文件已损坏'));
-          }
-        };
-        reader.onerror = () => reject(new Error('文件读取失败'));
-        reader.readAsArrayBuffer(file);
-      });
-    }
-
-    // HTML to text conversion
-    function htmlToText(html) {
-      let text = html;
+    
+    // 解析HTML内容 - 带时区转换
+    function parseConversations(htmlContent) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
       
-      // Remove script and style tags
-      text = text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-      text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
-      
-      // Convert line-breaking elements to newlines
-      text = text.replace(/<(br|BR)\s*\/?>/g, '\n');
-      text = text.replace(/<\/(p|div|li|section|article|header|footer|h[1-6])>/gi, '\n');
-      text = text.replace(/<(p|div|li|section|article|header|footer|h[1-6])\b[^>]*>/gi, '\n');
-      
-      // Remove all remaining HTML tags
-      text = text.replace(/<[^>]+>/g, '');
-      
-      // Decode HTML entities
-      text = text.replace(/&nbsp;/g, ' ')
-                 .replace(/&emsp;/g, ' ')
-                 .replace(/&lt;/g, '<')
-                 .replace(/&gt;/g, '>')
-                 .replace(/&amp;/g, '&')
-                 .replace(/&quot;/g, '"')
-                 .replace(/&#39;/g, "'");
-      
-      // Normalize line breaks
-      text = text.replace(/\r\n?/g, '\n')
-                 .replace(/\n{3,}/g, '\n\n')
-                 .trim();
-      
-      return text;
-    }
-
-    // Parse timestamp with timezone conversion
-    function parseTimestamp(timestamp) {
-      const raw = timestamp.trim();
-      const hasAM = /上午/.test(raw);
-      const hasPM = /下午/.test(raw);
-      
-      // Extract timezone
-      let timezone = null;
-      const tzMatch = raw.match(/\b(PDT|PST|UTC|GMT[+\-]?\d{0,2})\b/);
-      if (tzMatch) {
-        timezone = tzMatch[1];
-      }
-      
-      // Clean timestamp string
-      let cleanTime = raw.replace(/年|月/g, '/').replace(/日/g, '');
-      if (tzMatch) {
-        cleanTime = cleanTime.replace(tzMatch[0], '').trim();
-      }
-      
-      // Parse date and time
-      const match = cleanTime.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-      if (match) {
-        const [, year, month, day, hour, minute, second] = match;
-        let parsedHour = parseInt(hour);
-        
-        // Handle AM/PM
-        if (hasPM && parsedHour < 12) parsedHour += 12;
-        if (hasAM && parsedHour === 12) parsedHour = 0;
-        
-        // Create a date in the source timezone and convert to China time
-        if (timezone === 'PDT') {
-          const pdtDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
-          return new Date(pdtDate.getTime() + 15 * 60 * 60 * 1000);
-        } else if (timezone === 'PST') {
-          const pstDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
-          return new Date(pstDate.getTime() + 16 * 60 * 60 * 1000);
-        } else if (timezone === 'UTC') {
-          const utcDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
-          return new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-        } else {
-          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parsedHour, parseInt(minute), parseInt(second || '0'));
-        }
-      }
-      
-      const fallback = new Date(raw);
-      return isNaN(fallback.getTime()) ? new Date() : fallback;
-    }
-
-    // Main parsing function
-    function parseGeminiHTML(html) {
       const conversations = [];
-      const text = htmlToText(html);
+      const items = doc.querySelectorAll('.outer-cell');
       
-      const lines = text.split('\n');
-      const cleanLines = lines.filter(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return false;
-        if (/^商品：?\s*$/.test(trimmed)) return false;
-        if (/^产品：?\s*$/.test(trimmed)) return false;
-        if (/^Gemini\s*Apps?\s*$/.test(trimmed)) return false;
-        if (/^Activity\s*$/.test(trimmed)) return false;
-        if (/^为什么此处会显示此活动记录[？?]\s*$/.test(trimmed)) return false;
-        if (/^您可以点击此处控制这些设置[。.]?\s*$/.test(trimmed)) return false;
-        if (/^由于以下设置处于已启用状态/.test(trimmed)) return false;
-        return true;
-      });
-      
-      let cleanText = cleanLines.join('\n');
-      cleanText = cleanText.replace(/Gemini\s*Apps?\s*(Prompted|Live\s*Prompt)/gi, '$1')
-                          .replace(/\n\s*(Prompted|Live\s*Prompt)\s*\n?/gi, '\n$1\n');
-      
-      const blocks = cleanText.split(/^\s*(Prompted|Live\s*Prompt)\s*$/im);
-      const timestampRegex = /(\d{4}年\d{1,2}月\d{1,2}日\s*(?:上午|下午)?\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)|(\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:PDT|PST|UTC|GMT[+\-]?\d{0,2})?)/;
-      
-      log(`开始解析 ${Math.floor((blocks.length - 1) / 2)} 个对话块`);
-      
-      for (let i = 1; i < blocks.length; i += 2) {
-        const blockType = blocks[i].trim();
-        let block = blocks[i + 1] ? blocks[i + 1].trim() : '';
-        
-        if (block.length < 10) continue;
-        
-        const blockLines = block.split('\n');
-        const cleanBlockLines = blockLines.filter(line => {
-          const trimmed = line.trim();
-          if (!trimmed) return false;
-          if (/^商品：?\s*$/.test(trimmed)) return false;
-          if (/^产品：?\s*$/.test(trimmed)) return false;
-          if (/^Gemini\s*Apps?\s*$/.test(trimmed)) return false;
-          if (/^Activity\s*$/.test(trimmed)) return false;
-          return true;
-        });
-        
-        block = cleanBlockLines.join('\n').trim();
-        if (block.length < 10) continue;
-        
-        const timestampMatch = block.match(timestampRegex);
-        if (!timestampMatch) continue;
-        
-        const timestampStr = timestampMatch[0];
-        const timestampIndex = timestampMatch.index;
-        
-        const beforeTimestamp = block.slice(0, timestampIndex).trim();
-        const afterTimestamp = block.slice(timestampIndex + timestampStr.length).trim();
-        
-        let userMessage = '';
-        let aiMessage = '';
-        let isLivePrompt = /Live\s*Prompt/i.test(blockType);
-        
-        if (isLivePrompt) {
-          userMessage = beforeTimestamp || '系统预设操作提示';
-          aiMessage = afterTimestamp;
-        } else {
-          userMessage = beforeTimestamp;
-          aiMessage = afterTimestamp;
-        }
-        
-        if (userMessage || aiMessage) {
-          const parsedTime = parseTimestamp(timestampStr);
-          const now = new Date();
-          
-          if (parsedTime <= now) {
-            conversations.push({
-              timestamp: parsedTime,
-              userMessage,
-              aiMessage,
-              isSystemPrompt: isLivePrompt
-            });
-          } else {
-            log(`跳过未来时间: ${timestampStr} -> ${parsedTime.toLocaleString()}`);
-          }
-        }
+      if (items.length === 0) {
+        throw new Error('未找到有效的活动记录,请确保上传的是Google我的活动导出的HTML文件');
       }
       
-      const seen = new Set();
-      const unique = [];
+      log(`找到 ${items.length} 个活动项目`);
       
-      conversations.sort((a, b) => a.timestamp - b.timestamp).forEach(conv => {
-        const key = (conv.userMessage + '|' + conv.aiMessage).slice(0, 100);
-        if (!seen.has(key) && (conv.userMessage || conv.aiMessage)) {
-          seen.add(key);
-          unique.push(conv);
+      items.forEach((item, index) => {
+        try {
+          // 获取所有content-cell
+          const contentCells = item.querySelectorAll('.content-cell');
+          if (contentCells.length === 0) return;
+          
+          // 第一个content-cell包含用户消息和时间
+          const userCell = contentCells[0];
+          const textContent = userCell.textContent;
+          
+          // 解析时间 - 新版带时区标识
+          const timeMatch = textContent.match(/(\d{4})年(\d{1,2})月(\d{1,2})日\s+(\d{1,2}):(\d{2}):(\d{2})\s+([A-Z]{3})/);
+          if (!timeMatch) return;
+          
+          const [, year, month, day, hour, minute, second, timezone] = timeMatch;
+          
+          // 将PDT时间转换为东八区时间
+          // PDT是UTC-7,东八区是UTC+8,差15小时
+          let timestamp = new Date(year, month - 1, day, hour, minute, second);
+          
+          if (timezone === 'PDT' || timezone === 'PST') {
+            // PDT(太平洋夏令时)是UTC-7,PST(太平洋标准时)是UTC-8
+            // 转换为东八区需要加15小时(PDT)或16小时(PST)
+            const hoursToAdd = timezone === 'PDT' ? 15 : 16;
+            timestamp = new Date(timestamp.getTime() + hoursToAdd * 60 * 60 * 1000);
+          }
+          
+          // 过滤未来时间
+          const now = new Date();
+          if (timestamp > now) {
+            log(`跳过未来时间: ${timestamp.toLocaleString('zh-CN')}`, 'info');
+            return;
+          }
+          
+          // 提取用户消息
+          const promptMatch = textContent.match(/Prompted\s+([\s\S]+?)\d{4}年/);
+          let userMessage = '';
+          if (promptMatch) {
+            userMessage = promptMatch[1].trim();
+          }
+          
+          // 提取AI消息
+          let aiMessage = '';
+          const pTags = userCell.querySelectorAll('p');
+          pTags.forEach(p => {
+            const pText = p.textContent.trim();
+            if (pText && !pText.includes('Prompted') && !pText.includes('年') && !pText.includes('月') && !pText.includes('日')) {
+              aiMessage += (aiMessage ? '\n' : '') + pText;
+            }
+          });
+          
+          // 检查是否是系统预设
+          const isSystemPrompt = userMessage.includes('用自定义预设提示对') || userMessage.includes('设置"');
+          
+          // 只添加有内容的对话
+          if (userMessage || aiMessage) {
+            conversations.push({
+              timestamp: timestamp,
+              userMessage: userMessage.trim(),
+              aiMessage: aiMessage.trim(),
+              isSystemPrompt: isSystemPrompt
+            });
+          }
+        } catch (error) {
+          log(`解析第 ${index + 1} 项时出错: ${error.message}`, 'error');
         }
       });
       
-      log(`解析完成，找到 ${unique.length} 条有效对话`);
-      return unique;
+      // 按时间排序(最旧的在前)
+      conversations.sort((a, b) => a.timestamp - b.timestamp);
+      
+      log(`成功解析 ${conversations.length} 条对话`);
+      return conversations;
     }
-
-    // Group conversations by time interval
+    
+    // 按时间间隔分组
     function groupByTimeInterval(conversations, intervalDays) {
       if (conversations.length === 0) return [];
       
-      const msPerDay = 24 * 60 * 60 * 1000;
-      const intervalMs = intervalDays * msPerDay;
-      const now = new Date();
-      
-      const conversationTimes = conversations
-        .map(c => c.timestamp.getTime())
-        .filter(time => time <= now.getTime());
-      
-      if (conversationTimes.length === 0) return [];
-      
-      const earliest = Math.min(...conversationTimes);
-      const latest = Math.min(Math.max(...conversationTimes), now.getTime());
-      
-      log(`实际对话时间范围: ${new Date(earliest).toLocaleDateString()} - ${new Date(latest).toLocaleDateString()}`);
-      log(`当前时间: ${now.toLocaleDateString()}，共有效对话: ${conversationTimes.length}`);
-      
       const groups = [];
-      let currentStart = earliest;
+      let currentGroup = {
+        startDate: conversations[0].timestamp,
+        endDate: null,
+        conversations: []
+      };
       
-      while (currentStart <= latest) {
-        const currentEnd = Math.min(currentStart + intervalMs - 1, latest);
+      conversations.forEach(conv => {
+        const daysDiff = (conv.timestamp - currentGroup.startDate) / (1000 * 60 * 60 * 24);
         
-        const conversationsInRange = conversations.filter(conv => {
-          const convTime = conv.timestamp.getTime();
-          return convTime >= currentStart && convTime <= currentEnd && convTime <= now.getTime();
-        }).sort((a, b) => a.timestamp - b.timestamp);
-        
-        if (conversationsInRange.length > 0) {
-          const actualStart = Math.min(...conversationsInRange.map(c => c.timestamp.getTime()));
-          const actualEnd = Math.max(...conversationsInRange.map(c => c.timestamp.getTime()));
+        if (daysDiff > intervalDays) {
+          currentGroup.endDate = currentGroup.conversations[currentGroup.conversations.length - 1].timestamp;
+          groups.push(currentGroup);
           
-          groups.push({
-            startDate: new Date(actualStart),
-            endDate: new Date(actualEnd),
-            conversations: conversationsInRange
-          });
-          
-          log(`分组: ${new Date(actualStart).toLocaleDateString()} - ${new Date(actualEnd).toLocaleDateString()}, 对话数: ${conversationsInRange.length}`);
+          currentGroup = {
+            startDate: conv.timestamp,
+            endDate: null,
+            conversations: []
+          };
         }
         
-        currentStart += intervalMs;
-        
-        if (currentStart > latest || currentStart > now.getTime()) {
-          break;
-        }
+        currentGroup.conversations.push(conv);
+      });
+      
+      // 添加最后一组
+      if (currentGroup.conversations.length > 0) {
+        currentGroup.endDate = currentGroup.conversations[currentGroup.conversations.length - 1].timestamp;
+        groups.push(currentGroup);
       }
       
       return groups;
     }
-
-    // Generate TXT files with proper encoding
+    
+    // 生成TXT文件
     function generateTXTFiles(groups, intervalDays) {
       const files = [];
-      
-      const formatDate = (date) => {
-        return date.toLocaleDateString('zh-CN', { 
-          timeZone: 'Asia/Shanghai',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        }).replace(/\//g, '-');
-      };
-      
-      const formatDateTime = (date) => {
-        return date.toLocaleString('zh-CN', { 
-          timeZone: 'Asia/Shanghai' 
-        });
-      };
+      const userId = userIdInput.value || 'User';
+      const assistantId = assistantIdInput.value || 'Gemini';
       
       groups.forEach((group, index) => {
         const startDate = formatDate(group.startDate);
         const endDate = formatDate(group.endDate);
+        const filename = `Gemini对话记录_${startDate}${startDate !== endDate ? `_至_${endDate}` : ''}.txt`;
         
-        let content = `Gemini对话记录 - ${startDate}`;
-        if (startDate !== endDate) {
-          content += ` 至 ${endDate}`;
-        }
-        content += `\n\n`;
-        content += `📅 时间范围: ${startDate} 至 ${endDate}\n`;
-        content += `💬 对话数量: ${group.conversations.length}\n`;
-        content += `🕐 生成时间: ${formatDateTime(new Date())}\n\n`;
+        let content = '';
+        content += '='.repeat(80) + '\n';
+        content += `  ${assistantId}对话记录\n`;
+        content += `  时间范围: ${startDate}${startDate !== endDate ? ` 至 ${endDate}` : ''}\n`;
+        content += `  对话总数: ${group.conversations.length}\n`;
+        content += `  分组间隔: ${intervalDays}天\n`;
+        content += '='.repeat(80) + '\n\n';
         
-        group.conversations.forEach((conversation, convIndex) => {
-          const timestamp = formatDateTime(conversation.timestamp);
+        group.conversations.forEach((conv, convIndex) => {
+          // 时间已经在解析时转换为东八区,这里直接格式化
+          const timestamp = new Date(conv.timestamp).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
           
+          // 对话之间的分割线
           if (convIndex > 0) {
-            content += `┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n\n`;
+            content += '-'.repeat(80) + '\n\n';
           }
           
-          content += `对话 ${convIndex + 1}，🕐 ${timestamp}\n\n`;
+          // 时间戳(后面只有空行,没有分割线)
+          content += `对话 ${convIndex + 1} | ${timestamp}\n\n`;
           
-          if (conversation.userMessage) {
-            if (conversation.isSystemPrompt) {
-              content += `⚙️ 系统预设操作提示:\n${conversation.userMessage}\n\n`;
+          // 用户消息
+          if (conv.userMessage) {
+            if (conv.isSystemPrompt) {
+              content += `系统预设操作提示:\n${conv.userMessage}\n\n`;
             } else {
-              content += `👤 User:\n${conversation.userMessage}\n\n`;
+              content += `${userId}:\n${conv.userMessage}\n\n`;
             }
           }
           
-          if (conversation.aiMessage) {
-            content += `🤖 Gemini:\n${conversation.aiMessage}\n\n`;
+          // AI消息
+          if (conv.aiMessage) {
+            content += `${assistantId}:\n${conv.aiMessage}\n\n`;
           }
         });
         
-        // 添加 UTF-8 BOM 解决乱码问题
-        const bom = '\ufeff';
-        const contentWithBom = bom + content;
-        const blob = new Blob([contentWithBom], { type: 'text/plain;charset=utf-8' });
+        content += '='.repeat(80) + '\n';
+        content += '对话记录结束\n';
+        content += '='.repeat(80) + '\n';
         
-        // 修复文件名：使用实际日期而不是天数
-        let filename;
-        if (startDate === endDate) {
-          filename = `Gemini对话记录-${startDate}.txt`;
-        } else {
-          filename = `Gemini对话记录-${startDate}至${endDate}.txt`;
-        }
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
         
         files.push({
           name: filename,
-          blob,
-          startDate,
-          endDate,
+          url: url,
+          startDate: startDate,
+          endDate: endDate,
           count: group.conversations.length,
-          url: URL.createObjectURL(blob),
-          group: group // 保存分组数据供预览使用
+          group: group
         });
       });
       
       return files;
     }
-
-    // Main processing function
+    
+    // 格式化日期
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).replace(/\//g, '-');
+    }
+    
+    // 处理文件
     async function processFile() {
-      const file = fileInput.files[0];
-      if (!file) {
-        showMessage('请先选择文件', 'error');
+      if (!currentFile) {
+        showFileStatus('请先上传文件', 'error');
         return;
       }
       
       processBtn.disabled = true;
-      processBtn.textContent = '⏳ 处理中...';
+      processBtn.textContent = '处理中...';
       progressSection.style.display = 'block';
       resultsSection.style.display = 'none';
       
-      log(`开始处理文件: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
-      
       try {
-        updateProgress(10, '正在读取文件...');
-        const htmlContent = await readFileAsync(file);
-        log(`文件读取完成，内容长度: ${htmlContent.length} 字符`);
+        updateProgress(10, '读取文件中...');
+        log('开始读取文件...');
         
-        updateProgress(35, '正在解析对话记录...');
-        const conversations = parseGeminiHTML(htmlContent);
+        const htmlContent = await currentFile.text();
+        log(`文件读取完成,大小: ${htmlContent.length} 字符`);
+        
+        updateProgress(30, '解析对话记录...');
+        const conversations = parseConversations(htmlContent);
         
         if (conversations.length === 0) {
-          throw new Error('未找到有效的对话记录。请确认文件是从"Google我的活动 → Gemini Apps"导出的HTML文件。');
+          throw new Error('未找到有效对话记录');
         }
         
-        updateProgress(60, '正在按时间分组...');
-        let intervalDays = parseInt($('#timeInterval').value);
+        updateProgress(60, '分组处理中...');
+        
+        let intervalDays = 7;
+        const selectedInterval = $('#timeInterval').value;
+        
+        if (selectedInterval !== 'custom') {
+          intervalDays = parseInt(selectedInterval);
+        }
         
         if ($('#timeInterval').value === 'custom') {
           const customDays = parseInt($('#customDays').value);
@@ -1332,29 +1310,29 @@
         }
         
         const groups = groupByTimeInterval(conversations, intervalDays);
-        log(`分组完成，生成 ${groups.length} 个时间段`);
+        log(`分组完成,生成 ${groups.length} 个时间段`);
         
         updateProgress(85, '正在生成TXT文件...');
         processedFiles = generateTXTFiles(groups, intervalDays);
         
-        updateProgress(100, '🎉 处理完成!');
-        showMessage('处理成功！文件已生成，可以下载了。', 'success');
+        updateProgress(100, '处理完成');
+        showFileStatus('处理成功!文件已生成,可以下载了。', 'success');
         displayResults();
         
       } catch (error) {
-        log(`处理失败: ${error.message}`);
-        showMessage(`处理失败: ${error.message}`, 'error');
-        updateProgress(0, '❌ 处理失败');
+        log(`处理失败: ${error.message}`, 'error');
+        showFileStatus(`处理失败: ${error.message}`, 'error');
+        updateProgress(0, '处理失败');
       } finally {
         processBtn.disabled = false;
-        processBtn.textContent = '🚀 开始处理';
+        processBtn.textContent = '开始处理';
         setTimeout(() => {
           progressSection.style.display = 'none';
         }, 2000);
       }
     }
 
-    // Display results
+    // 显示结果
     function displayResults() {
       const totalConversations = processedFiles.reduce((sum, file) => sum + file.count, 0);
       
@@ -1370,24 +1348,39 @@
       const fileList = $('#fileList');
       fileList.innerHTML = '';
       
-      processedFiles.forEach(file => {
+      // 反转数组,最新的在上面
+      const reversedFiles = [...processedFiles].reverse();
+      
+      reversedFiles.forEach(file => {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
         
+        const originalIndex = processedFiles.indexOf(file);
+        
         fileItem.innerHTML = `
+          <div class="file-checkbox">
+            <input type="checkbox" id="file-${originalIndex}" data-index="${originalIndex}" onchange="updateSelectedCount()">
+          </div>
           <div class="file-info">
-            <div class="file-icon">📄</div>
+            <div class="file-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
             <div class="file-details">
               <h3>${file.name}</h3>
               <div class="file-meta">时间: ${file.startDate} - ${file.endDate} | 对话数: ${file.count}</div>
             </div>
           </div>
-          <div>
-            <button class="preview-btn" onclick="previewFile(${processedFiles.indexOf(file)})">
-              📑 预览
+          <div class="file-actions">
+            <button class="preview-btn" onclick="previewFile(${originalIndex})">
+              预览
             </button>
             <button class="download-btn" onclick="downloadFile('${file.url}', '${file.name}')">
-              📥 下载TXT
+              下载
             </button>
           </div>
         `;
@@ -1395,11 +1388,55 @@
         fileList.appendChild(fileItem);
       });
       
+      updateSelectedCount();
       resultsSection.style.display = 'block';
-      log(`结果展示完成，共 ${processedFiles.length} 个文件可供下载`);
+      log(`结果展示完成,共 ${processedFiles.length} 个文件可供下载`);
+    }
+    
+    // 更新选中数量
+    function updateSelectedCount() {
+      const checkboxes = document.querySelectorAll('.file-checkbox input[type="checkbox"]');
+      const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const countSpan = $('#selectedCount');
+      if (countSpan) {
+        countSpan.textContent = selectedCount;
+      }
+    }
+    
+    // 全选
+    function selectAllFiles() {
+      const checkboxes = document.querySelectorAll('.file-checkbox input[type="checkbox"]');
+      checkboxes.forEach(cb => cb.checked = true);
+      updateSelectedCount();
+    }
+    
+    // 取消全选
+    function deselectAllFiles() {
+      const checkboxes = document.querySelectorAll('.file-checkbox input[type="checkbox"]');
+      checkboxes.forEach(cb => cb.checked = false);
+      updateSelectedCount();
+    }
+    
+    // 下载选中的文件
+    function downloadSelectedFiles() {
+      const checkboxes = document.querySelectorAll('.file-checkbox input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        showFileStatus('请至少选择一个文件', 'error');
+        return;
+      }
+      
+      checkboxes.forEach((cb, index) => {
+        const fileIndex = parseInt(cb.dataset.index);
+        const file = processedFiles[fileIndex];
+        setTimeout(() => {
+          downloadFile(file.url, file.name);
+        }, index * 500);
+      });
+      
+      log(`下载选中的 ${checkboxes.length} 个文件`);
     }
 
-    // Preview file function
+    // 预览文件
     function previewFile(fileIndex) {
       const file = processedFiles[fileIndex];
       if (!file || !file.group) return;
@@ -1409,33 +1446,28 @@
       const modalStats = document.getElementById('modalStats');
       const modalBody = document.getElementById('modalBody');
       
-      // Calculate stats
+      const userId = userIdInput.value || 'User';
+      const assistantId = assistantIdInput.value || 'Gemini';
+      
+      // 计算统计信息
       const group = file.group;
       const totalChars = group.conversations.reduce((sum, conv) => {
         return sum + (conv.userMessage?.length || 0) + (conv.aiMessage?.length || 0);
       }, 0);
       
-      const totalWords = group.conversations.reduce((sum, conv) => {
-        const userWords = conv.userMessage ? conv.userMessage.replace(/\s+/g, ' ').trim().length : 0;
-        const aiWords = conv.aiMessage ? conv.aiMessage.replace(/\s+/g, ' ').trim().length : 0;
-        return sum + userWords + aiWords;
-      }, 0);
-      
-      // Set modal content
+      // 设置模态框内容
       modalTitle.textContent = `对话记录预览 - ${file.startDate}${file.startDate !== file.endDate ? ` 至 ${file.endDate}` : ''}`;
-      modalStats.innerHTML = `📊 ${group.conversations.length} 条对话 | 📝 ${totalChars} 字符 | 🔤 约 ${Math.ceil(totalWords/2)} 词`;
+      modalStats.innerHTML = `${group.conversations.length} 条对话 | ${totalChars} 字符`;
       
-      // Generate conversation HTML
+      // 生成对话HTML
       let conversationHTML = '';
       group.conversations.forEach((conversation, index) => {
-        const timestamp = new Date(conversation.timestamp).toLocaleString('zh-CN', { 
-          timeZone: 'Asia/Shanghai' 
-        });
+        const timestamp = new Date(conversation.timestamp).toLocaleString('zh-CN');
         
         conversationHTML += `
           <div class="conversation-item">
             <div class="conversation-header">
-              🕐 对话 ${index + 1} - ${timestamp}
+              对话 ${index + 1} - ${timestamp}
             </div>
         `;
         
@@ -1443,14 +1475,14 @@
           if (conversation.isSystemPrompt) {
             conversationHTML += `
               <div class="message-bubble system-bubble">
-                <div class="message-label">⚙️ 系统预设操作提示</div>
+                <div class="message-label">系统预设</div>
                 <div class="message-content">${escapeHtml(conversation.userMessage)}</div>
               </div>
             `;
           } else {
             conversationHTML += `
               <div class="message-bubble user-bubble">
-                <div class="message-label">User</div>
+                <div class="message-label">${userId}</div>
                 <div class="message-content">${escapeHtml(conversation.userMessage)}</div>
               </div>
             `;
@@ -1460,7 +1492,7 @@
         if (conversation.aiMessage) {
           conversationHTML += `
             <div class="message-bubble ai-bubble">
-              <div class="message-label">Gemini</div>
+              <div class="message-label">${assistantId}</div>
               <div class="message-content">${escapeHtml(conversation.aiMessage)}</div>
             </div>
           `;
@@ -1472,31 +1504,29 @@
       modalBody.innerHTML = conversationHTML;
       modal.style.display = 'block';
       
-      // Add smooth fade-in effect
       setTimeout(() => {
         modal.style.opacity = '1';
       }, 10);
     }
     
-    // Helper function to escape HTML
+    // HTML转义
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
     
-    // Close modal function
+    // 关闭模态框
     function closeModal() {
       const modal = document.getElementById('previewModal');
       modal.style.opacity = '0';
       setTimeout(() => {
         modal.style.display = 'none';
-        // 清理模态框内容，防止残留
         document.getElementById('modalBody').innerHTML = '';
       }, 300);
     }
 
-    // Download file function
+    // 下载文件
     function downloadFile(url, filename) {
       const link = document.createElement('a');
       link.href = url;
@@ -1506,47 +1536,31 @@
       document.body.removeChild(link);
       log(`下载文件: ${filename}`);
     }
-
-    // Show file status
-    function showFileStatus(message, type = 'success') {
-      const statusDiv = $('#fileStatus');
-      statusDiv.textContent = message;
-      statusDiv.className = `message ${type}`;
-      statusDiv.style.display = 'block';
-      
-      setTimeout(() => {
-        statusDiv.style.display = 'none';
-      }, 3000);
+    
+    // 下载所有文件
+    function downloadAllFiles() {
+      processedFiles.forEach((file, index) => {
+        setTimeout(() => {
+          downloadFile(file.url, file.name);
+        }, index * 500);
+      });
+      log(`批量下载 ${processedFiles.length} 个文件`);
     }
 
-    // Show message
-    function showMessage(message, type = 'info') {
-      const existingMessages = document.querySelectorAll('.message');
-      existingMessages.forEach(msg => msg.remove());
-      
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${type}`;
-      messageDiv.textContent = message;
-      
-      const uploadSection = document.querySelector('.upload-section');
-      uploadSection.insertBefore(messageDiv, uploadSection.firstChild);
-      
-      setTimeout(() => {
-        if (messageDiv.parentNode) {
-          messageDiv.remove();
-        }
-      }, 5000);
-    }
-
-    // Event listeners
+    // 事件监听
     processBtn.addEventListener('click', processFile);
 
-    // Make functions available globally for onclick handlers
+    // 全局函数
     window.downloadFile = downloadFile;
     window.previewFile = previewFile;
     window.closeModal = closeModal;
+    window.downloadAllFiles = downloadAllFiles;
+    window.selectAllFiles = selectAllFiles;
+    window.deselectAllFiles = deselectAllFiles;
+    window.downloadSelectedFiles = downloadSelectedFiles;
+    window.updateSelectedCount = updateSelectedCount;
     
-    // Close modal when clicking outside
+    // 点击模态框外部关闭
     window.addEventListener('click', (event) => {
       const modal = document.getElementById('previewModal');
       if (event.target === modal) {
@@ -1554,17 +1568,16 @@
       }
     });
 
-    // Cleanup on page unload
+    // 清理
     window.addEventListener('beforeunload', () => {
       processedFiles.forEach(file => {
         URL.revokeObjectURL(file.url);
       });
     });
 
-    // Initialize
-    log('Gemini活动记录分组工具 修复版已加载完成');
-    log('修复内容: 文件名显示、未来时间过滤、乱码问题');
-    log('工具特点: 隐私安全(本地处理) | 智能解析 | 时间校准 | 批量导出');
+    // 初始化
+    log('Gemini活动记录分组工具已加载');
+    log('功能: 隐私安全 | 智能解析 | 时区转换 | 批量导出 | 自定义ID');
   </script>
 </body>
 </html>
